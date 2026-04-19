@@ -3,3 +3,5 @@ uvicorn
 python-dotenv
 pydantic
 watchfiles
+psycopg2-binary
+google-generativeai

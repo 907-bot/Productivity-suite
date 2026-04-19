@@ -62,6 +62,7 @@
     .form-group{margin-bottom:15px;}
     .form-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;}
     .form-input,.form-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:12px;border-radius:12px;color:#fff;outline:none;font-family:inherit;}
+    .form-select option { background-color: #1c1917; color: #fff; }
     .toast{position:fixed;bottom:30px;right:30px;padding:15px 25px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);z-index:300;transform:translateY(100px);transition:0.3s;}
     .toast.show{transform:translateY(0);}
 
@@ -191,6 +192,10 @@
       <label class="form-label">Birthday</label>
       <input type="date" id="cBirth" class="form-input"/>
     </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="text" id="cPhone" class="form-input" placeholder="+91 ..."/>
+    </div>
     <div style="display:flex;gap:10px;margin-top:10px;">
       <button class="btn btn-ghost" onclick="closeModal('contactModal')" style="flex:1;">Cancel</button>
       <button class="btn btn-primary" onclick="saveContact()" style="flex:1;">Save</button>
@@ -311,7 +316,8 @@ async function saveContact() {
   const category = document.getElementById('cCat').value;
   const notes = document.getElementById('cNotes').value;
   const birthday = document.getElementById('cBirth').value;
-  await fetch(`${API}/contacts`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, category, notes, birthday})});
+  const phone = document.getElementById('cPhone').value;
+  await fetch(`${API}/contacts`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, category, notes, birthday, phone})});
   closeModal('contactModal'); loadDashboard(); showToast('Contact added!');
 }
 
@@ -343,6 +349,7 @@ async function viewContact(id) {
   document.getElementById('detailTitle').textContent = d.contact.name;
   document.getElementById('contactDetailBox').innerHTML = `
     <div style="font-size:14px;margin-bottom:10px;"><strong>Category:</strong> ${d.contact.category}</div>
+    <div style="font-size:14px;margin-bottom:10px;"><strong>Phone:</strong> ${d.contact.phone || 'None'}</div>
     <div style="font-size:14px;margin-bottom:10px;"><strong>Birthday:</strong> ${d.contact.birthday || 'None'}</div>
     <div style="font-size:14px;margin-bottom:10px;"><strong>Notes:</strong> ${d.contact.notes || 'None'}</div>
     <div style="font-size:14px;margin-bottom:10px;"><strong>Health:</strong> ${d.contact.health_score}/100</div>

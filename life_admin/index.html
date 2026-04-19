@@ -97,7 +97,12 @@
     .reminder-repeat{font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(108,99,255,0.12);color:var(--accent2);margin-left:6px;}
 
     /* Productivity */
-    .log-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;}
+    /* Forms */
+    .form-group{margin-bottom:15px;}
+    .form-label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
+    .form-input, .form-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-family:inherit;font-size:14px;outline:none;}
+    .form-input:focus, .form-select:focus{border-color:var(--accent);background:rgba(255,255,255,0.08);}
+    .form-select option { background-color: #11111f; color: #fff; }
     .log-cell{height:24px;border-radius:5px;background:rgba(108,99,255,0.08);cursor:pointer;transition:all 0.15s;}
     .log-cell.has-activity{background:rgba(108,99,255,0.45);}
     .log-cell:hover{transform:scale(1.1);}

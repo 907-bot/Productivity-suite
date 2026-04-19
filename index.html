@@ -359,6 +359,7 @@
         <footer>
             <p>© 2026 Productivity Suite OS — Created by Portfolio Architect</p>
             <p style="margin-top: 1rem; font-size: 0.75rem; letter-spacing: 1px;">POWERED BY FASTAPI & SQLITE</p>
+            <button onclick="sendTestNotification()" style="margin-top: 15px; background: none; border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 5px; font-size: 0.7rem; cursor: pointer;">Test Notification 🔔</button>
         </footer>
     </div>
 
@@ -368,6 +369,19 @@
     </div>
 
     <script>
+        function sendTestNotification() {
+            if (Notification.permission === 'granted') {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification('Productivity OS', {
+                        body: 'This is a test notification! It works.',
+                        icon: 'productivity_suite_hero_1776616434984.png'
+                    });
+                });
+            } else {
+                alert('Please allow notification permission first!');
+            }
+        }
+
         // PWA Installation Logic
         let deferredPrompt;
         const installBtn = document.getElementById('install-prompt');

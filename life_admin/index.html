@@ -137,8 +137,12 @@
         padding: 0; border-right: none; border-top: 1px solid var(--border); 
       }
       .logo, .ss, .status-badge { display: none; }
-      nav { display: flex; width: 100%; justify-content: space-around; align-items: center; }
-      nav a { margin: 0 !important; padding: 0; border: none !important; }
+      nav { 
+        display: flex; width: 100%; justify-content: flex-start; align-items: center; 
+        overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 20px; padding: 0 15px; 
+      }
+      nav::-webkit-scrollbar { display: none; }
+      nav a { margin: 0 !important; padding: 0; border: none !important; flex-shrink: 0; min-width: 60px; }
       .stats { grid-template-columns: 1fr; }
       .grid2 { grid-template-columns: 1fr; }
       .topbar { flex-direction: column; align-items: flex-start; gap: 15px; }

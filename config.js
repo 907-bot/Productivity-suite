@@ -2,10 +2,8 @@
 const CONFIG = {
     // Change this to your hosted backend URL once deployed (e.g., https://prod-os-api.onrender.com)
     // Keep it empty or "http://localhost:8000" for local development
-    BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-              ? 'http://localhost' 
-              : 'https://YOUR-BACKEND-URL.onrender.com', // <--- Update this after deployment!
-    
+    BASE_URL: BASE_URL: 'https://productivity-suite-sror.onrender.com',
+
     // API Mapping
     API: {
         LIFE: ':8001',
@@ -14,7 +12,7 @@ const CONFIG = {
         CONTENT: ':8004',
         RELATIONSHIP: ':8005'
     },
-    
+
     // Production API Mapping (when consolidated)
     PROD_API: {
         LIFE: '/api/life',

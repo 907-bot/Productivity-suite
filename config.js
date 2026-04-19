@@ -1,10 +1,11 @@
 // Productivity OS - Global Configuration
 const CONFIG = {
-    // Change this to your hosted backend URL once deployed (e.g., https://prod-os-api.onrender.com)
-    // Keep it empty or "http://localhost:8000" for local development
-    BASE_URL: BASE_URL: 'https://productivity-suite-sror.onrender.com',
-
-    // API Mapping
+    // Hosted backend URL on Render
+    BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+              ? 'http://localhost' 
+              : 'https://productivity-suite-sror.onrender.com',
+    
+    // API Mapping (Local)
     API: {
         LIFE: ':8001',
         WELLNESS: ':8002',
@@ -12,8 +13,8 @@ const CONFIG = {
         CONTENT: ':8004',
         RELATIONSHIP: ':8005'
     },
-
-    // Production API Mapping (when consolidated)
+    
+    // Production API Mapping (Consolidated on Render)
     PROD_API: {
         LIFE: '/api/life',
         WELLNESS: '/api/wellness',

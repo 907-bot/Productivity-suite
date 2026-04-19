@@ -1,0 +1,251 @@
+
+<style>
+  .proj-grid { display: flex; flex-direction: column; gap: 1.5rem; padding: 1rem 0; }
+  .proj-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .proj-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.25rem 0.75rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .proj-num { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 99px; }
+  .proj-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+  .proj-desc { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  .proj-body { padding: 0.75rem 1.25rem 1rem; }
+  .proj-what { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 0.75rem; }
+  .stack-section { margin-top: 0.5rem; }
+  .stack-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; }
+  .tag-core { background: #EEEDFE; color: #3C3489; }
+  .tag-ai { background: #E1F5EE; color: #085041; }
+  .tag-adv { background: #FAEEDA; color: #633806; }
+  .tag-db { background: #E6F1FB; color: #0C447C; }
+  .divider { height: 0.5px; background: var(--color-border-tertiary); margin: 8px 0; }
+  @media (prefers-color-scheme: dark) {
+    .tag-core { background: #26215C; color: #CECBF6; }
+    .tag-ai { background: #04342C; color: #9FE1CB; }
+    .tag-adv { background: #412402; color: #FAC775; }
+    .tag-db { background: #042C53; color: #B5D4F4; }
+  }
+</style>
+<h2 class="sr-only">5 AI Adulting Projects with tech stacks from the video</h2>
+
+<div class="proj-grid">
+
+  <div class="proj-card">
+    <div class="proj-header">
+      <span class="proj-num tag-core">#1</span>
+      <div>
+        <div class="proj-title">Life Admin Assistant</div>
+        <div class="proj-desc">Your AI personal organiser for adulting tasks</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <p class="proj-what">An AI agent that manages all day-to-day adult responsibilities — scheduling appointments, tracking deadlines, managing bills, handling assignments, sending reminders, and keeping life on track automatically.</p>
+      <div class="stack-section">
+        <div class="stack-label">Core Stack</div>
+        <div class="tags">
+          <span class="tag tag-core">Next.js 15</span>
+          <span class="tag tag-core">TypeScript</span>
+          <span class="tag tag-core">FastAPI</span>
+          <span class="tag tag-core">PostgreSQL</span>
+          <span class="tag tag-db">Redis (caching)</span>
+          <span class="tag tag-db">Supabase</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">AI / Agents</div>
+        <div class="tags">
+          <span class="tag tag-ai">Claude claude-sonnet-4-20250514</span>
+          <span class="tag tag-ai">LangGraph (agent flows)</span>
+          <span class="tag tag-ai">LlamaIndex (RAG)</span>
+          <span class="tag tag-ai">OpenAI Whisper (voice input)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">Advanced / New Tech</div>
+        <div class="tags">
+          <span class="tag tag-adv">Agentic AI (multi-step reasoning)</span>
+          <span class="tag tag-adv">Google Calendar MCP</span>
+          <span class="tag tag-adv">Gmail MCP integration</span>
+          <span class="tag tag-adv">Tool-use / Function Calling</span>
+          <span class="tag tag-adv">Notion API sync</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-header">
+      <span class="proj-num tag-ai">#2</span>
+      <div>
+        <div class="proj-title">Wellness Manager</div>
+        <div class="proj-desc">AI that tracks mood, health habits & mental wellbeing</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <p class="proj-what">Tracks mood patterns, sleep, exercise, water intake, and emotional state. Detects burnout signals, suggests routines, replaces fragmented health apps with one unified AI-powered dashboard.</p>
+      <div class="stack-section">
+        <div class="stack-label">Core Stack</div>
+        <div class="tags">
+          <span class="tag tag-core">React Native (mobile)</span>
+          <span class="tag tag-core">Expo</span>
+          <span class="tag tag-core">Node.js</span>
+          <span class="tag tag-core">MongoDB</span>
+          <span class="tag tag-db">InfluxDB (time-series data)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">AI / Models</div>
+        <div class="tags">
+          <span class="tag tag-ai">Sentiment analysis NLP</span>
+          <span class="tag tag-ai">Claude API (journal analysis)</span>
+          <span class="tag tag-ai">Llama 3.3 (on-device)</span>
+          <span class="tag tag-ai">TensorFlow Lite</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">Advanced / New Tech</div>
+        <div class="tags">
+          <span class="tag tag-adv">Apple HealthKit / Google Fit API</span>
+          <span class="tag tag-adv">Wearable data (Fitbit/Whoop)</span>
+          <span class="tag tag-adv">Biometric pattern detection</span>
+          <span class="tag tag-adv">RAG over personal health history</span>
+          <span class="tag tag-adv">Voice journaling (Whisper)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-header">
+      <span class="proj-num tag-db">#3</span>
+      <div>
+        <div class="proj-title">Finance Manager</div>
+        <div class="proj-desc">AI personal finance advisor & budget tracker</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <p class="proj-what">Connects to bank accounts, categorises spending, tracks subscriptions, creates personalised budgets, flags unusual transactions, and gives proactive savings advice — like a financial advisor in your pocket.</p>
+      <div class="stack-section">
+        <div class="stack-label">Core Stack</div>
+        <div class="tags">
+          <span class="tag tag-core">Next.js 15</span>
+          <span class="tag tag-core">Prisma ORM</span>
+          <span class="tag tag-core">PostgreSQL</span>
+          <span class="tag tag-core">Python (analytics)</span>
+          <span class="tag tag-db">Plaid API (banking)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">AI / Models</div>
+        <div class="tags">
+          <span class="tag tag-ai">Claude (spend insights)</span>
+          <span class="tag tag-ai">Pandas + scikit-learn</span>
+          <span class="tag tag-ai">Anomaly detection ML</span>
+          <span class="tag tag-ai">Prophet (expense forecasting)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">Advanced / New Tech</div>
+        <div class="tags">
+          <span class="tag tag-adv">Open Banking APIs</span>
+          <span class="tag tag-adv">Receipt OCR (Google Vision)</span>
+          <span class="tag tag-adv">Crypto wallet tracking</span>
+          <span class="tag tag-adv">AI-driven savings goals</span>
+          <span class="tag tag-adv">Natural language queries ("How much did I spend on food?")</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-header">
+      <span class="proj-num tag-adv">#4</span>
+      <div>
+        <div class="proj-title">Content Manager</div>
+        <div class="proj-desc">AI that manages all your content creation & consumption</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <p class="proj-what">Handles social media scheduling, drafts posts, summarises articles/newsletters you've saved, tracks what content is performing, and curates a personalised reading/watching digest — your AI content strategist.</p>
+      <div class="stack-section">
+        <div class="stack-label">Core Stack</div>
+        <div class="tags">
+          <span class="tag tag-core">Next.js</span>
+          <span class="tag tag-core">tRPC</span>
+          <span class="tag tag-core">Turso (SQLite edge DB)</span>
+          <span class="tag tag-core">Cloudflare Workers</span>
+          <span class="tag tag-db">Pinecone (vector store)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">AI / Models</div>
+        <div class="tags">
+          <span class="tag tag-ai">Claude (drafting & tone matching)</span>
+          <span class="tag tag-ai">Embeddings (semantic search)</span>
+          <span class="tag tag-ai">Perplexity API (research)</span>
+          <span class="tag tag-ai">DALL-E 3 / Flux (image gen)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">Advanced / New Tech</div>
+        <div class="tags">
+          <span class="tag tag-adv">Multi-platform publishing (Buffer/Later API)</span>
+          <span class="tag tag-adv">AI tone/voice cloning</span>
+          <span class="tag tag-adv">YouTube + RSS feed ingestion</span>
+          <span class="tag tag-adv">Semantic content deduplication</span>
+          <span class="tag tag-adv">Engagement analytics AI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-header">
+      <span class="proj-num" style="background:#FBEAF0;color:#72243E;font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;">#5</span>
+      <div>
+        <div class="proj-title">Relationship Manager</div>
+        <div class="proj-desc">AI that helps you nurture and maintain personal relationships</div>
+      </div>
+    </div>
+    <div class="proj-body">
+      <p class="proj-what">Remembers important dates, tracks the last time you connected with friends/family, drafts thoughtful messages, reminds you to check in, and helps maintain meaningful relationships — because adulting means not losing touch.</p>
+      <div class="stack-section">
+        <div class="stack-label">Core Stack</div>
+        <div class="tags">
+          <span class="tag tag-core">SvelteKit</span>
+          <span class="tag tag-core">Drizzle ORM</span>
+          <span class="tag tag-core">PostgreSQL</span>
+          <span class="tag tag-core">Resend (email)</span>
+          <span class="tag tag-db">Twilio (SMS/WhatsApp)</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">AI / Models</div>
+        <div class="tags">
+          <span class="tag tag-ai">Claude (personalised message drafting)</span>
+          <span class="tag tag-ai">Memory layer (MemGPT style)</span>
+          <span class="tag tag-ai">NLP relationship context tracking</span>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stack-section">
+        <div class="stack-label">Advanced / New Tech</div>
+        <div class="tags">
+          <span class="tag tag-adv">Long-term memory (Mem0 / Zep)</span>
+          <span class="tag tag-adv">Contacts API sync</span>
+          <span class="tag tag-adv">Conversation history RAG</span>
+          <span class="tag tag-adv">Gift idea generation (LLM + web search)</span>
+          <span class="tag tag-adv">Sentiment-aware message tone</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

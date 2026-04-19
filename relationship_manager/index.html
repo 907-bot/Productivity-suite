@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relationship Manager — Build Stronger Bonds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0c0a09;--bg2:#1c1917;--card:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.08);--accent:#f43f5e;--rose:#fb7185;--blue:#38bdf8;--green:#34d399;--text:#fafaf9;--muted:#a8a29e;--radius:20px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 70% 20%,rgba(244,63,94,0.1) 0%,transparent 40%),radial-gradient(circle at 10% 80%,rgba(56,189,248,0.06) 0%,transparent 40%);pointer-events:none;}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:30px 0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:12px;padding:0 24px 30px;}
+    .logo-icon{font-size:24px;}
+    .logo-text{font-size:18px;font-weight:800;letter-spacing:-0.5px;}
+    nav a{display:flex;align-items:center;gap:12px;padding:12px 24px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;transition:0.2s;}
+    nav a:hover,nav a.active{color:var(--text);background:rgba(244,63,94,0.1);border-left:4px solid var(--accent);}
+    .main{margin-left:240px;padding:40px;position:relative;z-index:1;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
+    .btn{padding:10px 22px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;display:inline-flex;align-items:center;gap:8px;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);}
+    .btn-sm{padding:6px 12px;font-size:11px;}
+    
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:30px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+    .stat-val{font-size:32px;font-weight:800;margin:4px 0;}
+    .stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+    
+    .grid2{display:grid;grid-template-columns:1.2fr 0.8fr;gap:20px;margin-bottom:20px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+    .card h3{font-size:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+    
+    .contact-item{display:flex;align-items:center;padding:15px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;}
+    .c-avatar{width:45px;height:45px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--rose));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin-right:15px;}
+    .c-info{flex:1;}
+    .c-name{font-size:15px;font-weight:600;}
+    .c-sub{font-size:11px;color:var(--muted);}
+    .c-score-wrap{text-align:right;}
+    .c-score{font-size:18px;font-weight:800;color:var(--green);}
+    
+    .event-row{padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+    .event-row:last-child{border-bottom:none;}
+    .event-date{width:50px;text-align:center;}
+    .event-day{font-size:18px;font-weight:800;}
+    .event-month{font-size:10px;text-transform:uppercase;color:var(--muted);}
+
+    .template-item{padding:15px;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:0.2s;}
+    .template-item:hover{border-color:var(--accent);}
+    .t-name{font-size:13px;font-weight:700;margin-bottom:5px;color:var(--accent);}
+    .t-body{font-size:13px;color:var(--muted);line-height:1.4;}
+
+    .interaction-row{padding:12px 0;border-left:2px solid var(--border);padding-left:15px;position:relative;margin-left:8px;}
+    .interaction-row::before{content:'';position:absolute;left:-5px;top:15px;width:8px;height:8px;border-radius:50%;background:var(--muted);}
+
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:32px;width:450px;}
+    .form-group{margin-bottom:15px;}
+    .form-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;}
+    .form-input,.form-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:12px;border-radius:12px;color:#fff;outline:none;font-family:inherit;}
+    .toast{position:fixed;bottom:30px;right:30px;padding:15px 25px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);z-index:300;transform:translateY(100px);transition:0.3s;}
+    .toast.show{transform:translateY(0);}
+  </style>
+  <script src="../config.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><span class="logo-icon">❤️</span><span class="logo-text">Relate Admin</span></div>
+  <nav>
+    <a class="active" onclick="setView('dashboard',this)"><span>📊</span> Dashboard</a>
+    <a onclick="setView('contacts',this)"><span>👥</span> Contacts</a>
+    <a onclick="setView('events',this)"><span>🗓️</span> Events</a>
+    <a onclick="setView('templates',this)"><span>✉️</span> Templates</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <!-- DASHBOARD -->
+  <div id="dashboardView">
+    <div class="topbar">
+      <div><h1>Circle Overview ❤️</h1><div style="font-size:13px;color:var(--muted);margin-top:4px;" id="dashSubtitle">Average health: ...</div></div>
+      <div style="display:flex;gap:10px;"><button class="btn btn-ghost" onclick="openEventModal()">Add Event</button><button class="btn btn-primary" onclick="openContactModal()">+ New Contact</button></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">Total Circle</div><div class="stat-val" id="totalContacts">0</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Health</div><div class="stat-val" id="avgHealth" style="color:var(--green);">0%</div></div>
+      <div class="stat-card"><div class="stat-label">Upcoming Events</div><div class="stat-val" id="eventCount">0</div></div>
+      <div class="stat-card"><div class="stat-label">Need Attention</div><div class="stat-val" id="attentionCount" style="color:var(--accent);">0</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Top Relationships <button class="btn btn-ghost btn-sm" onclick="setView('contacts')">All</button></h3>
+        <div id="topContacts"></div>
+      </div>
+      <div class="card">
+        <h3>Upcoming Dates</h3>
+        <div id="upcomingEvents"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Reach Out Recommendations</h3>
+      <div id="needsAttention"></div>
+    </div>
+  </div>
+
+  <!-- CONTACTS -->
+  <div id="contactsView" style="display:none;">
+    <div class="topbar"><h1>👥 Your Circle</h1><button class="btn btn-primary" onclick="openContactModal()">+ Add Contact</button></div>
+    <div id="fullContactList"></div>
+  </div>
+
+  <!-- EVENTS -->
+  <div id="eventsView" style="display:none;">
+    <div class="topbar"><h1>🗓️ Birthdays & Events</h1><button class="btn btn-primary" onclick="openEventModal()">+ Create Event</button></div>
+    <div class="card"><div id="fullEventList"></div></div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div id="templatesView" style="display:none;">
+    <div class="topbar"><h1>✉️ Message Templates</h1><button class="btn btn-primary" onclick="openTemplateModal()">+ New Template</button></div>
+    <div class="grid2" id="fullTemplateList"></div>
+  </div>
+
+  <!-- CONTACT DETAIL (INLINE OVERLAY) -->
+  <div id="detailView" style="display:none;">
+    <div class="topbar"><button class="btn btn-ghost" onclick="setView('contacts')">← Back</button><h1 id="detailTitle">Contact Detail</h1><button class="btn btn-primary" onclick="openInteractionModal()">+ Log Interaction</button></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Interaction Timeline</h3>
+        <div id="contactTimeline"></div>
+      </div>
+      <div class="card">
+        <h3>Details</h3>
+        <div id="contactDetailBox"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <h3>New Contact</h3>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" id="cName" class="form-input" placeholder="e.g. Rahul Sharma..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select id="cCat" class="form-select">
+        <option>Friend</option><option>Family</option><option>Professional</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" id="cNotes" class="form-input" placeholder="What do they like?"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Birthday</label>
+      <input type="date" id="cBirth" class="form-input"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="btn btn-ghost" onclick="closeModal('contactModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveContact()" style="flex:1;">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <h3>Add Event</h3>
+    <div class="form-group">
+      <label class="form-label">Event Title</label>
+      <input type="text" id="eTitle" class="form-input" placeholder="e.g. Wedding Anniversary..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contact Name</label>
+      <input type="text" id="eName" class="form-input" placeholder="Who is it for?"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" id="eDate" class="form-input"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="btn btn-ghost" onclick="closeModal('eventModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEvent()" style="flex:1;">Add Event</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="interactionModal">
+  <div class="modal">
+    <h3>Log Log Interaction</h3>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="iType" class="form-select"><option>Call</option><option>Message</option><option>Meetup</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" id="iNotes" class="form-input" placeholder="What did you talk about?"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="btn btn-ghost" onclick="closeModal('interactionModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInteraction()" style="flex:1;">Log</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="templateModal">
+  <div class="modal">
+    <h3>Create Template</h3>
+    <div class="form-group">
+      <label class="form-label">Template Name</label>
+      <input type="text" id="tName" class="form-input" placeholder="e.g. Birthday Wish..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Message Body</label>
+      <textarea id="tBody" class="form-input" style="height:120px;padding:12px;resize:none;"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button class="btn btn-ghost" onclick="closeModal('templateModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTemplate()" style="flex:1;">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API = getApiUrl('RELATIONSHIP');
+let selectedContactId = null;
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast show';setTimeout(()=>t.className='toast',3000);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openContactModal(){document.getElementById('contactModal').classList.add('open');}
+function openEventModal(){document.getElementById('eventModal').classList.add('open');}
+function openTemplateModal(){document.getElementById('templateModal').classList.add('open');}
+function openInteractionModal(){document.getElementById('interactionModal').classList.add('open');}
+
+async function loadDashboard() {
+  try {
+    const r = await fetch(`${API}/dashboard`);
+    const d = await r.json();
+    document.getElementById('totalContacts').textContent = d.total_contacts;
+    document.getElementById('avgHealth').textContent = d.avg_health_score + '%';
+    document.getElementById('eventCount').textContent = d.upcoming_events.length;
+    document.getElementById('attentionCount').textContent = d.needs_attention.length;
+    document.getElementById('dashSubtitle').textContent = `Average circle health: ${d.avg_health_score}%`;
+
+    document.getElementById('topContacts').innerHTML = d.contacts.slice(0,4).map(c=>`
+      <div class="contact-item" onclick="viewContact('${c.id}')" style="cursor:pointer;">
+        <div class="c-avatar">${c.name[0]}</div>
+        <div class="c-info">
+          <div class="c-name">${c.name}</div>
+          <div class="c-sub">${c.category} · Last: ${c.last_contact || 'Never'}</div>
+        </div>
+        <div class="c-score-wrap"><div class="c-score">${c.health_score}</div></div>
+      </div>`).join('');
+
+    document.getElementById('upcomingEvents').innerHTML = d.upcoming_events.length > 0 ? d.upcoming_events.map(e=>{
+      const dt = new Date(e.event_date);
+      return `<div class="event-row">
+        <div class="event-date"><div class="event-day">${dt.getDate()}</div><div class="event-month">${dt.toLocaleString('default',{month:'short'})}</div></div>
+        <div><div style="font-size:14px;font-weight:600;">${e.title}</div><div style="font-size:11px;color:var(--muted);">${e.contact_name}</div></div>
+      </div>`
+    }).join('') : '<div style="color:var(--muted);text-align:center;padding:10px;">No events soon.</div>';
+
+    document.getElementById('needsAttention').innerHTML = d.needs_attention.map(c=>`
+      <div class="contact-item">
+        <div class="c-avatar" style="background:var(--bg2);color:var(--accent);border:1px solid var(--accent);">${c.name[0]}</div>
+        <div class="c-info"><div class="c-name">${c.name}</div><div class="c-sub">Fading connection (${c.health_score})</div></div>
+        <button class="btn btn-primary btn-sm" onclick="viewContact('${c.id}')">Reach Out</button>
+      </div>`).join('');
+  } catch(e){console.error(e);}
+}
+
+async function saveContact() {
+  const name = document.getElementById('cName').value;
+  const category = document.getElementById('cCat').value;
+  const notes = document.getElementById('cNotes').value;
+  const birthday = document.getElementById('cBirth').value;
+  await fetch(`${API}/contacts`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, category, notes, birthday})});
+  closeModal('contactModal'); loadDashboard(); showToast('Contact added!');
+}
+
+async function loadContacts() {
+  const r = await fetch(`${API}/contacts`);
+  const d = await r.json();
+  document.getElementById('fullContactList').innerHTML = d.items.map(c=>`
+    <div class="contact-item" onclick="viewContact('${c.id}')" style="cursor:pointer;">
+      <div class="c-avatar">${c.name[0]}</div>
+      <div class="c-info">
+        <div class="c-name">${c.name}</div>
+        <div class="c-sub">${c.category} · Score: ${c.health_score}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); deleteContact('${c.id}')">✕</button>
+    </div>`).join('');
+}
+
+async function deleteContact(id) {
+  if(!confirm('Remove this person?')) return;
+  await fetch(`${API}/contacts/${id}`,{method:'DELETE'});
+  loadContacts();
+}
+
+async function viewContact(id) {
+  selectedContactId = id;
+  setView('detail');
+  const r = await fetch(`${API}/contacts/${id}/timeline`);
+  const d = await r.json();
+  document.getElementById('detailTitle').textContent = d.contact.name;
+  document.getElementById('contactDetailBox').innerHTML = `
+    <div style="font-size:14px;margin-bottom:10px;"><strong>Category:</strong> ${d.contact.category}</div>
+    <div style="font-size:14px;margin-bottom:10px;"><strong>Birthday:</strong> ${d.contact.birthday || 'None'}</div>
+    <div style="font-size:14px;margin-bottom:10px;"><strong>Notes:</strong> ${d.contact.notes || 'None'}</div>
+    <div style="font-size:14px;margin-bottom:10px;"><strong>Health:</strong> ${d.contact.health_score}/100</div>
+  `;
+  document.getElementById('contactTimeline').innerHTML = d.timeline.length > 0 ? d.timeline.map(t=>`
+    <div class="interaction-row">
+      <div style="font-size:11px;color:var(--muted);">${t.created_at.slice(0,10)}</div>
+      <div style="font-size:14px;font-weight:600;">${t.type}</div>
+      <div style="font-size:13px;color:var(--muted);">${t.notes}</div>
+    </div>`).join('') : '<div style="color:var(--muted);">No interactions logged yet.</div>';
+}
+
+async function saveInteraction() {
+  const notes = document.getElementById('iNotes').value;
+  const type = document.getElementById('iType').value;
+  await fetch(`${API}/interactions`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contact_id: selectedContactId, type, notes})});
+  closeModal('interactionModal'); viewContact(selectedContactId); showToast('Interaction logged! ❤️');
+}
+
+async function saveTemplate() {
+  const name = document.getElementById('tName').value;
+  const body = document.getElementById('tBody').value;
+  await fetch(`${API}/message-templates`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, body})});
+  closeModal('templateModal'); loadTemplates(); showToast('Template saved!');
+}
+
+async function loadTemplates() {
+  const r = await fetch(`${API}/message-templates`);
+  const d = await r.json();
+  document.getElementById('fullTemplateList').innerHTML = d.templates.map(t=>`
+    <div class="template-item" onclick="copyTemplate('${t.body.replace(/\n/g,' ')}')">
+      <div class="t-name">${t.name}</div>
+      <div class="t-body">${t.body.slice(0,80)}...</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:5px;">Click to Copy</div>
+    </div>`).join('');
+}
+
+function copyTemplate(text) {
+  navigator.clipboard.writeText(text);
+  showToast('Copied to clipboard!');
+}
+
+async function loadEvents() {
+  const r = await fetch(`${API}/events`);
+  const d = await r.json();
+  document.getElementById('fullEventList').innerHTML = d.events.map(e=>{
+    return `<div class="event-row">
+      <div style="flex:1;">
+        <div style="font-size:15px;font-weight:600;">${e.title}</div>
+        <div style="font-size:11px;color:var(--muted);">${e.contact_name} · ${e.event_date}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);">${e.days_until} days until</div>
+        <button class="btn btn-ghost btn-sm" onclick="deleteEvent('${e.id}')">✕</button>
+      </div>
+    </div>`
+  }).join('');
+}
+
+async function saveEvent() {
+  const title = document.getElementById('eTitle').value;
+  const contact_name = document.getElementById('eName').value;
+  const event_date = document.getElementById('eDate').value;
+  await fetch(`${API}/events`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title, contact_name, event_date})});
+  closeModal('eventModal'); loadEvents(); showToast('Event added! 🗓️');
+}
+
+async function deleteEvent(id) {
+  await fetch(`${API}/events/${id}`,{method:'DELETE'});
+  loadEvents();
+}
+
+function setView(v, el) {
+  if(el) {
+    document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+    el.classList.add('active');
+  }
+  ['dashboard','contacts','events','templates','detail'].forEach(id=>document.getElementById(id+'View').style.display=(id===v?'block':'none'));
+  if(v==='dashboard') loadDashboard();
+  if(v==='contacts') loadContacts();
+  if(v==='events') loadEvents();
+  if(v==='templates') loadTemplates();
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wellness Manager — Health & Habit Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#080a0f;--bg2:#0f141e;--card:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.08);--accent:#34d399;--purple:#a78bfa;--blue:#38bdf8;--red:#f87171;--orange:#fb923c;--text:#e2e8f0;--muted:#94a3b8;--radius:20px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 80% 20%,rgba(52,211,153,0.1) 0%,transparent 50%),radial-gradient(circle at 20% 80%,rgba(167,139,250,0.08) 0%,transparent 50%);pointer-events:none;}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:30px 0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:12px;padding:0 24px 30px;}
+    .logo-icon{font-size:28px;}
+    .logo-text{font-size:18px;font-weight:800;letter-spacing:-0.5px;}
+    nav a{display:flex;align-items:center;gap:12px;padding:12px 24px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;transition:0.2s;}
+    nav a:hover,nav a.active{color:var(--text);background:rgba(52,211,153,0.08);border-left:4px solid var(--accent);}
+    .api-badge{margin-top:auto;padding:20px;margin-bottom:20px;border-top:1px solid var(--border);}
+    .api-status{display:flex;align-items:center;gap:8px;font-size:12px;}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+    .main{margin-left:240px;padding:40px;position:relative;z-index:1;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
+    .btn{padding:10px 22px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;display:inline-flex;align-items:center;gap:8px;}
+    .btn-primary{background:var(--accent);color:#000;}
+    .btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);}
+    .btn-sm{padding:6px 12px;font-size:11px;}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:30px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:0.3s;}
+    .stat-val{font-size:32px;font-weight:800;margin:10px 0 4px;}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .trend-bars{display:flex;align-items:flex-end;gap:8px;height:100px;padding-top:10px;}
+    .trend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;}
+    .trend-bar{width:100%;background:var(--accent);border-radius:4px 4px 0 0;transition:0.5s;}
+    .trend-label{font-size:9px;color:var(--muted);}
+    
+    /* Habit Styles */
+    .habit-item{display:flex;align-items:center;padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;}
+    .habit-icon{width:40px;height:40px;border-radius:10px;background:rgba(52,211,153,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:15px;}
+    .habit-info{flex:1;}
+    .habit-name{font-size:14px;font-weight:600;}
+    .habit-streak{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+    .habit-check{width:50px;height:30px;border-radius:8px;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:0.2s;}
+    .habit-check.done{background:var(--accent);color:#000;}
+    .habit-check.undone{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+    .habit-history{display:flex;gap:4px;margin-top:8px;}
+    .h-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.05);}
+    .h-dot.active{background:var(--accent);}
+
+    /* Exercise Styles */
+    .exercise-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+    .exercise-row:last-child{border-bottom:none;}
+    .ex-info div{font-size:14px;font-weight:500;}
+    .ex-info small{font-size:11px;color:var(--muted);}
+    .ex-stats{text-align:right;}
+    .ex-stats span{font-size:14px;font-weight:700;display:block;}
+    .ex-stats small{font-size:10px;color:var(--muted);}
+
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:32px;width:420px;max-width:95vw;}
+    .form-group{margin-bottom:15px;}
+    .form-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:1px;}
+    .form-input,.form-select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);padding:12px;border-radius:12px;color:#fff;outline:none;font-family:inherit;}
+    .mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px;}
+    .mood-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;font-size:20px;transition:0.2s;}
+    .mood-btn.selected{background:rgba(52,211,153,0.2);border-color:var(--accent);}
+    .toast{position:fixed;bottom:30px;right:30px;padding:15px 25px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);z-index:300;transform:translateY(100px);transition:0.3s;}
+    .toast.show{transform:translateY(0);}
+  </style>
+  <script src="../config.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><span class="logo-icon">🌿</span><span class="logo-text">Wellness Manager</span></div>
+  <nav>
+    <a class="active" onclick="setView('dashboard',this)"><span>📊</span> Dashboard</a>
+    <a onclick="setView('habits',this)"><span>⭐</span> Habits</a>
+    <a onclick="setView('exercise',this)"><span>💪</span> Exercise</a>
+    <a onclick="setView('journal',this)"><span>📓</span> Journal</a>
+    <a onclick="setView('burnout',this)"><span>🔥</span> Burnout Tracker</a>
+  </nav>
+  <div class="api-badge">
+    <div class="api-status"><div class="dot"></div><span id="apiStatus">Wellness Active</span></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Wellness Score: <span id="wellnessScore" style="color:var(--accent);">—</span>/100</div>
+  </div>
+</aside>
+
+<main class="main">
+  <!-- DASHBOARD -->
+  <div id="dashboardView">
+    <div class="topbar">
+      <div>
+        <h1>Welcome Back 🌿</h1>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="statusText">Tracking your health journey…</div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="openExerciseModal()">+ Log Workout</button>
+        <button class="btn btn-primary" onclick="openMoodModal()">+ Log Mood</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Mood</div>
+        <div class="stat-val" id="statMood">—</div>
+        <div style="font-size:12px;color:var(--accent);" id="statMoodEmoji">😊 Daily Check-in</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Sleep</div>
+        <div class="stat-val" id="statSleep">—</div>
+        <div style="font-size:12px;color:var(--blue);" id="statSleepQuality">Log hours</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Hydration</div>
+        <div class="stat-val" id="statWater">—</div>
+        <div style="font-size:12px;color:var(--blue);" onclick="logWater()" style="cursor:pointer;">+ Tap to add cup 💧</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Burnout risk</div>
+        <div class="stat-val" id="statBurnout" style="color:var(--accent);">Low</div>
+        <div style="font-size:12px;color:var(--muted);">Based on 7d trend</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><div class="stat-label">Mood Trend (7d)</div></div>
+        <div class="trend-bars" id="moodBars"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="stat-label">Sleep Trend (7d)</div></div>
+        <div class="trend-bars" id="sleepBars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="stat-label">Daily Habits</div>
+        <div class="card-action" onclick="setView('habits')" style="font-size:12px;color:var(--accent);cursor:pointer;">Manage →</div>
+      </div>
+      <div id="habitPreview"></div>
+    </div>
+  </div>
+
+  <!-- HABITS -->
+  <div id="habitsView" style="display:none;">
+    <div class="topbar">
+      <h1>⭐ Habits & Streaks</h1>
+      <button class="btn btn-primary" onclick="openHabitModal()">+ New Habit</button>
+    </div>
+    <div id="habitsList"></div>
+  </div>
+
+  <!-- EXERCISE -->
+  <div id="exerciseView" style="display:none;">
+    <div class="topbar">
+      <h1>💪 Exercise Tracker</h1>
+      <button class="btn btn-primary" onclick="openExerciseModal()">+ Log Workout</button>
+    </div>
+    <div class="grid2">
+      <div class="stat-card">
+        <div class="stat-label">Week Duration</div>
+        <div class="stat-val" id="exWeekMins">0m</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cals Burned</div>
+        <div class="stat-val" id="exWeekCals">0</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Recent Activities</h3>
+      <div id="exerciseList" style="margin-top:15px;"></div>
+    </div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div id="journalView" style="display:none;">
+    <div class="topbar">
+      <h1>📓 Reflection Journal</h1>
+      <button class="btn btn-primary" onclick="openJournalModal()">+ Write Entry</button>
+    </div>
+    <div id="journalEntries"></div>
+  </div>
+
+  <!-- BURNOUT -->
+  <div id="burnoutView" style="display:none;">
+    <div class="topbar"><h1>🔥 Burnout Analysis</h1></div>
+    <div class="card">
+      <div id="burnoutRiskBox" style="text-align:center;padding:20px;">
+        <div style="font-size:12px;text-transform:uppercase;color:var(--muted);">Current Risk Level</div>
+        <div id="riskLevel" style="font-size:48px;font-weight:800;margin:10px 0;">Low</div>
+      </div>
+      <div style="margin-top:20px;">
+        <h3>Practical Tips for You</h3>
+        <ul id="burnoutTips" style="margin-top:10px;color:var(--muted);line-height:1.8;padding-left:20px;"></ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="moodModal">
+  <div class="modal">
+    <h3>Log Daily Mood</h3>
+    <div class="mood-grid">
+      <button class="mood-btn" onclick="selMood(this,'😢')">😢</button>
+      <button class="mood-btn" onclick="selMood(this,'😐')">😐</button>
+      <button class="mood-btn selected" onclick="selMood(this,'😊')">😊</button>
+      <button class="mood-btn" onclick="selMood(this,'😃')">😃</button>
+      <button class="mood-btn" onclick="selMood(this,'🌟')">🌟</button>
+    </div>
+    <div class="form-group" style="margin-top:20px;">
+      <label class="form-label">Score (1-10)</label>
+      <input type="number" id="moodScore" value="7" min="1" max="10" class="form-input"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" id="moodNotes" class="form-input" placeholder="How was your day?"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" onclick="closeModal('moodModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMood()" style="flex:1;">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <h3>New Habit</h3>
+    <div class="form-group">
+      <label class="form-label">Habit Name</label>
+      <input type="text" id="habitName" class="form-input" placeholder="e.g. Meditate, Read, Walk..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Icon (Emoji)</label>
+      <input type="text" id="habitIcon" class="form-input" value="⭐"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" onclick="closeModal('habitModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHabit()" style="flex:1;">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exerciseModal">
+  <div class="modal">
+    <h3>Log Exercise</h3>
+    <div class="form-group">
+      <label class="form-label">Activity Name</label>
+      <input type="text" id="exName" class="form-input" placeholder="e.g. Morning Run, Yoga..."/>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="form-group">
+        <label class="form-label">Duration (Mins)</label>
+        <input type="number" id="exDur" class="form-input" placeholder="30"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Calories</label>
+        <input type="number" id="exCal" class="form-input" placeholder="200"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="exType" class="form-select">
+        <option>Cardio</option><option>Strength</option><option>Flexibility</option><option>Sport</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" onclick="closeModal('exerciseModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExercise()" style="flex:1;">Log Activity</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="journalModal">
+  <div class="modal" style="width:500px;">
+    <h3>New Entry</h3>
+    <textarea id="journalText" style="width:100%;height:200px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:15px;color:#fff;margin-top:10px;font-family:inherit;outline:none;" placeholder="Reflect on your day..."></textarea>
+    <div class="form-group" style="margin-top:15px;">
+      <label class="form-label">Mood Tag</label>
+      <select id="journalMood" class="form-select">
+        <option>Positive</option><option>Neutral</option><option>Negative</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" onclick="closeModal('journalModal')" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary" onclick="saveJournal()" style="flex:1;">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API = getApiUrl('WELLNESS');
+let curEmoji = '😊';
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast show';setTimeout(()=>t.className='toast',3000);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openMoodModal(){document.getElementById('moodModal').classList.add('open');}
+function openHabitModal(){document.getElementById('habitModal').classList.add('open');}
+function openExerciseModal(){document.getElementById('exerciseModal').classList.add('open');}
+function openJournalModal(){document.getElementById('journalModal').classList.add('open');}
+function selMood(el,e){curEmoji=e;document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+
+async function loadDashboard() {
+  try {
+    const r = await fetch(`${API}/dashboard`);
+    const d = await r.json();
+    document.getElementById('statMood').textContent = d.mood?.score ? d.mood.score+'/10' : '—';
+    document.getElementById('statMoodEmoji').textContent = (d.mood?.emoji || 'Log mood');
+    document.getElementById('statSleep').textContent = d.sleep?.hours ? d.sleep.hours+'h' : '—';
+    document.getElementById('statSleepQuality').textContent = d.sleep?.quality || 'Log hours';
+    document.getElementById('statWater').textContent = `${d.water_today}/${d.water_goal} cups`;
+    document.getElementById('statBurnout').textContent = d.burnout_risk;
+    document.getElementById('wellnessScore').textContent = d.wellness_score;
+    
+    if(d.mood_trend) document.getElementById('moodBars').innerHTML = d.mood_trend.map(m=>`<div class="trend-bar-wrap"><div class="trend-bar" style="height:${m.score*10}%"></div><div class="trend-label">${m.date.slice(8)}</div></div>`).join('');
+    if(d.sleep_trend) document.getElementById('sleepBars').innerHTML = d.sleep_trend.map(s=>`<div class="trend-bar-wrap"><div class="trend-bar" style="height:${s.hours*10}%;background:var(--blue);"></div><div class="trend-label">${s.date.slice(8)}</div></div>`).join('');
+    
+    document.getElementById('habitPreview').innerHTML = d.habits.slice(0,3).map(h=>`
+      <div class="habit-item">
+        <div class="habit-icon">${h.icon}</div>
+        <div class="habit-info">
+          <div class="habit-name">${h.name}</div>
+          <div class="habit-streak">${h.streak} day streak 🔥</div>
+        </div>
+        <button class="habit-check ${h.done_today?'done':'undone'}" onclick="toggleHabit('${h.id}')">${h.done_today?'✓':'—'}</button>
+      </div>`).join('');
+  } catch(e){console.error(e);}
+}
+
+async function logWater() {
+  await fetch(`${API}/water/log`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cups:1})});
+  loadDashboard(); showToast('Cup added! 💧');
+}
+
+async function saveMood() {
+  const score = parseInt(document.getElementById('moodScore').value);
+  const notes = document.getElementById('moodNotes').value;
+  await fetch(`${API}/mood`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({score, emoji:curEmoji, notes})});
+  closeModal('moodModal'); loadDashboard(); showToast('Mood saved!');
+}
+
+async function loadHabits() {
+  const r = await fetch(`${API}/habits`);
+  const d = await r.json();
+  document.getElementById('habitsList').innerHTML = d.habits.map(h => `
+    <div class="card" style="margin-bottom:15px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:15px;">
+          <div class="habit-icon">${h.icon}</div>
+          <div>
+            <div class="habit-name">${h.name}</div>
+            <div class="habit-streak">${h.streak} day streak 🔥</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="habit-check ${h.done_today?'done':'undone'}" onclick="toggleHabit('${h.id}','habits')">${h.done_today?'✓':'—'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteHabit('${h.id}')">✕</button>
+        </div>
+      </div>
+      <div class="habit-history">
+        ${h.history.map(day => `<div class="h-dot ${day.done?'active':''}" title="${day.date}"></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+async function saveHabit() {
+  const name = document.getElementById('habitName').value;
+  const icon = document.getElementById('habitIcon').value;
+  await fetch(`${API}/habits`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, icon})});
+  closeModal('habitModal'); loadHabits(); showToast('Habit created!');
+}
+
+async function toggleHabit(id, view='dashboard') {
+  await fetch(`${API}/habits/${id}/log`,{method:'POST'});
+  if(view==='dashboard') loadDashboard(); else loadHabits();
+}
+
+async function deleteHabit(id) {
+  if(!confirm('Delete habit?')) return;
+  await fetch(`${API}/habits/${id}`,{method:'DELETE'});
+  loadHabits();
+}
+
+async function saveExercise() {
+  const name = document.getElementById('exName').value;
+  const duration = parseInt(document.getElementById('exDur').value);
+  const calories = parseInt(document.getElementById('exCal').value) || 0;
+  const type = document.getElementById('exType').value;
+  await fetch(`${API}/exercise`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, duration, calories, type})});
+  closeModal('exerciseModal'); loadExercise(); showToast('Exercise logged!');
+}
+
+async function loadExercise() {
+  const r = await fetch(`${API}/exercise/history`);
+  const d = await r.json();
+  document.getElementById('exWeekMins').textContent = d.week_minutes + 'm';
+  document.getElementById('exWeekCals').textContent = d.week_calories.toLocaleString();
+  document.getElementById('exerciseList').innerHTML = d.exercises.map(e => `
+    <div class="exercise-row">
+      <div class="ex-info">
+        <div>${e.name}</div>
+        <small>${e.type} · ${e.logged_at}</small>
+      </div>
+      <div class="ex-stats">
+        <span>${e.duration}m</span>
+        <small>${e.calories} kcal</small>
+      </div>
+    </div>`).join('');
+}
+
+async function saveJournal() {
+  const content = document.getElementById('journalText').value;
+  const mood_tag = document.getElementById('journalMood').value;
+  await fetch(`${API}/journal`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content, mood_tag})});
+  closeModal('journalModal'); document.getElementById('journalText').value = ''; loadJournal(); showToast('Entry saved!');
+}
+
+async function loadJournal() {
+  const r = await fetch(`${API}/journal`);
+  const d = await r.json();
+  document.getElementById('journalEntries').innerHTML = d.entries.map(e=>`
+    <div class="card" style="margin-bottom:15px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:11px;color:var(--muted);">${e.created_at}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.05);color:var(--accent);">${e.mood_tag}</span>
+      </div>
+      <div style="font-size:14px;line-height:1.6;">${e.content}</div>
+    </div>`).join('');
+}
+
+async function loadBurnout() {
+  const r = await fetch(`${API}/burnout`);
+  const d = await r.json();
+  document.getElementById('riskLevel').textContent = d.burnout_risk;
+  const colors = {Low:'var(--accent)', Medium:'var(--orange)', High:'var(--red)'};
+  document.getElementById('riskLevel').style.color = colors[d.burnout_risk];
+  document.getElementById('burnoutTips').innerHTML = d.tips.map(t=>`<li>${t}</li>`).join('');
+}
+
+function setView(v, el) {
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active')); if(el) el.classList.add('active');
+  ['dashboard','habits','exercise','journal','burnout'].forEach(id=>document.getElementById(id+'View').style.display=(id===v?'block':'none'));
+  if(v==='dashboard') loadDashboard();
+  if(v==='habits') loadHabits();
+  if(v==='exercise') loadExercise();
+  if(v==='journal') loadJournal();
+  if(v==='burnout') loadBurnout();
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

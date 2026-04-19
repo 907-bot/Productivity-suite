@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity OS — Master Hub</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --bg: #0a0a0c;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Hero Background with generated image */
+        .hero-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.95)), 
+                        url('productivity_suite_hero_1776616434984.png');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: blur(2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .badge {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 0.5rem 1.25rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* App Grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card:hover {
+            transform: translateY(-12px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .app-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .app-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .app-card:hover .app-icon {
+            transform: rotate(10deg) scale(1.1);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .app-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .app-desc {
+            color: #94a3b8;
+            line-height: 1.5;
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .app-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+            opacity: 0.8;
+            transition: gap 0.3s ease;
+        }
+
+        .app-card:hover .app-footer {
+            gap: 1rem;
+            opacity: 1;
+        }
+
+        /* Individual Card Colors */
+        .card-life .app-icon { color: #818cf8; }
+        .card-wellness .app-icon { color: #34d399; }
+        .card-finance .app-icon { color: #fbbf24; }
+        .card-content .app-icon { color: #f472b6; }
+        .card-rel .app-icon { color: #60a5fa; }
+
+        /* Stats Section */
+        .stats-banner {
+            margin-top: 6rem;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-item p {
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        footer {
+            margin-top: 8rem;
+            text-align: center;
+            padding-bottom: 4rem;
+            color: #475569;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Installation Prompt */
+        #install-prompt {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 2rem 1.5rem; }
+            h1 { font-size: 3rem; }
+            .app-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-bg"></div>
+
+    <div class="container">
+        <header>
+            <div class="badge">Next Generation OS</div>
+            <h1>Productivity Suite 3.0</h1>
+            <p class="subtitle">A unified collection of specialized tools to conquer your day, automate your life, and grow your wealth. Designed for high-performance individuals.</p>
+        </header>
+
+        <div class="app-grid">
+            <!-- Life Admin -->
+            <a href="life-admin/index.html" class="app-card card-life">
+                <div class="app-icon"><i class="fas fa-check-double"></i></div>
+                <div class="app-content">
+                    <h2 class="app-title">Life Admin</h2>
+                    <p class="app-desc">Smart Eisenhower priority matrix and system-wide task management. Automate your daily logistics.</p>
+                </div>
+                <div class="app-footer">Launch Application <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+            <!-- Wellness Manager -->
+            <a href="wellness-manager/index.html" class="app-card card-wellness">
+                <div class="app-icon"><i class="fas fa-heartbeat"></i></div>
+                <div class="app-content">
+                    <h2 class="app-title">Wellness</h2>
+                    <p class="app-desc">Track habits, sleep, and mood. Proactive burnout prevention and habit streak analytics.</p>
+                </div>
+                <div class="app-footer">Launch Application <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+            <!-- Finance Manager -->
+            <a href="finance-manager/index.html" class="app-card card-finance">
+                <div class="app-icon"><i class="fas fa-wallet"></i></div>
+                <div class="app-content">
+                    <h2 class="app-title">Finance</h2>
+                    <p class="app-desc">Real-time wealth tracking, goal contributors, and spending anomaly detection.</p>
+                </div>
+                <div class="app-footer">Launch Application <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+            <!-- Content Manager -->
+            <a href="content-manager/index.html" class="app-card card-content">
+                <div class="app-icon"><i class="fas fa-feather-pointed"></i></div>
+                <div class="app-content">
+                    <h2 class="app-title">Content</h2>
+                    <p class="app-desc">Ideas board and publishing queue. Unified dashboard for LinkedIn, Twitter, and YouTube growth.</p>
+                </div>
+                <div class="app-footer">Launch Application <i class="fas fa-arrow-right"></i></div>
+            </a>
+
+            <!-- Relationship Manager -->
+            <a href="relationship-manager/index.html" class="app-card card-rel">
+                <div class="app-icon"><i class="fas fa-users"></i></div>
+                <div class="app-content">
+                    <h2 class="app-title">Relationship</h2>
+                    <p class="app-desc">Build stronger bonds. Contact health scores, birthday timelines, and message templates.</p>
+                </div>
+                <div class="app-footer">Launch Application <i class="fas fa-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="stats-banner">
+            <div class="stat-item">
+                <h3>5</h3>
+                <p>Integrated Apps</p>
+            </div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Local & Private</p>
+            </div>
+            <div class="stat-item">
+                <h3>Zero</h3>
+                <p>Ad Distractions</p>
+            </div>
+            <div class="stat-item">
+                <h3>PWA</h3>
+                <p>Ready for Mobile</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 Productivity Suite OS — Created by Portfolio Architect</p>
+            <p style="margin-top: 1rem; font-size: 0.75rem; letter-spacing: 1px;">POWERED BY FASTAPI & SQLITE</p>
+        </footer>
+    </div>
+
+    <!-- PWA Installation Prompt -->
+    <div id="install-prompt">
+        <i class="fas fa-download"></i> Install Productivity OS
+    </div>
+
+    <script>
+        // PWA Installation Logic
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-prompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        // Register Service Worker (Simplest placeholder)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
+        }
+    </script>
+</body>
+</html>

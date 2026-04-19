@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wellness Manager — AI Health & Wellbeing Hub</title>
+  <meta name="description" content="AI-powered wellness dashboard tracking mood, sleep, exercise, water and detecting burnout patterns."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#030d0a; --bg2:#061510; --bg3:#0c2219;
+      --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08);
+      --green:#34d399; --green2:#10b981; --emerald:#059669;
+      --blue:#38bdf8; --yellow:#fbbf24; --red:#f87171;
+      --purple:#a78bfa; --orange:#fb923c;
+      --text:#e8fdf5; --muted:#6b9e8a;
+      --radius:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 10% 20%,rgba(52,211,153,0.12) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 90% 80%,rgba(16,185,129,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:10px;padding:0 20px 28px;}
+    .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--emerald));display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .logo-text{font-size:17px;font-weight:700;letter-spacing:-0.3px;}
+    .logo-sub{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.06em;text-transform:uppercase;}
+    nav a{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:all 0.18s;}
+    nav a:hover,nav a.active{color:var(--text);background:rgba(52,211,153,0.08);border-left-color:var(--green);}
+    .ss{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);padding:18px 20px 6px;}
+    .burnout-alert{margin:auto 16px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:10px 14px;}
+    .burnout-alert .ba-title{font-size:12px;font-weight:600;color:var(--yellow);}
+    .burnout-alert .ba-text{font-size:11px;color:var(--muted);margin-top:3px;}
+
+    .main{margin-left:240px;padding:32px;position:relative;z-index:1;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+    .topbar h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;}
+    .btn{padding:8px 18px;border-radius:999px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .btn-primary{background:linear-gradient(135deg,var(--green),var(--emerald));color:#fff;}
+    .btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+    .btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--text);}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .sc-g::before{background:linear-gradient(90deg,var(--green),var(--emerald));}
+    .sc-b::before{background:linear-gradient(90deg,var(--blue),#0ea5e9);}
+    .sc-y::before{background:linear-gradient(90deg,var(--yellow),var(--orange));}
+    .sc-p::before{background:linear-gradient(90deg,var(--purple),#8b5cf6);}
+    .stat-icon{font-size:22px;margin-bottom:10px;}
+    .stat-val{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:500;}
+    .stat-delta{font-size:11px;margin-top:6px;}
+    .du{color:var(--green);} .dd{color:var(--red);}
+
+    /* MOOD RING */
+    .mood-section{display:grid;grid-template-columns:1fr 1.4fr;gap:20px;margin-bottom:20px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .card-title{font-size:14px;font-weight:700;}
+    .card-action{font-size:12px;color:var(--green);cursor:pointer;font-weight:500;}
+
+    .mood-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+    .mood-day{display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .mood-day-label{font-size:10px;color:var(--muted);}
+    .mood-emoji{font-size:22px;cursor:pointer;border-radius:8px;padding:2px;transition:transform 0.15s;}
+    .mood-emoji:hover{transform:scale(1.2);}
+    .mood-score{font-size:10px;color:var(--muted);}
+    .mood-today .mood-emoji{outline:2px solid var(--green);border-radius:8px;}
+
+    /* RINGS (like Apple Watch) */
+    .rings-row{display:flex;gap:20px;justify-content:center;align-items:center;padding:10px 0;}
+    .ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+    .ring-svg{transform:rotate(-90deg);}
+    .ring-label{font-size:11px;color:var(--muted);font-weight:500;text-align:center;}
+    .ring-val{font-size:14px;font-weight:700;text-align:center;}
+
+    /* SLEEP CHART */
+    .sleep-bars{display:flex;align-items:flex-end;gap:8px;height:100px;margin-top:10px;}
+    .sleep-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+    .sleep-bar{width:100%;border-radius:6px 6px 0 0;transition:height 0.4s ease;cursor:pointer;}
+    .sleep-bar:hover{opacity:0.8;}
+    .sleep-day{font-size:10px;color:var(--muted);}
+    .sleep-val{font-size:10px;font-weight:600;}
+
+    /* WATER TRACKER */
+    .water-track{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+    .water-cup{width:36px;height:36px;border-radius:8px;border:2px solid rgba(56,189,248,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s;background:transparent;}
+    .water-cup.filled{background:rgba(56,189,248,0.2);border-color:var(--blue);}
+
+    /* BURNOUT METER */
+    .burnout-bar-wrap{margin-top:12px;}
+    .burnout-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;}
+    .burnout-bar-bg{height:8px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;}
+    .burnout-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red));transition:width 0.6s ease;}
+    .burnout-factors{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+    .bf-row{display:flex;align-items:center;gap:10px;font-size:12px;}
+    .bf-label{width:90px;color:var(--muted);}
+    .bf-bar-bg{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;}
+    .bf-bar-fill{height:100%;border-radius:999px;}
+
+    /* AI JOURNAL */
+    .journal-area{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:14px;}
+    .journal-textarea{width:100%;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;resize:none;outline:none;min-height:80px;}
+    .journal-textarea::placeholder{color:var(--muted);}
+    .journal-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+    .voice-btn{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);color:var(--green);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .voice-btn:hover{background:rgba(52,211,153,0.2);}
+    .analyze-btn{background:linear-gradient(135deg,var(--green),var(--emerald));color:#fff;border:none;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .analyze-btn:hover{opacity:0.88;}
+
+    /* ROUTINES */
+    .routine-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .routine-item:last-child{border-bottom:none;}
+    .routine-icon{font-size:20px;}
+    .routine-name{font-size:13px;font-weight:500;flex:1;}
+    .routine-time{font-size:12px;color:var(--muted);}
+    .routine-toggle{width:40px;height:22px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid var(--border);cursor:pointer;position:relative;transition:background 0.2s;}
+    .routine-toggle.on{background:var(--green);}
+    .routine-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;}
+    .routine-toggle.on::after{transform:translateX(18px);}
+
+    /* WEARABLE */
+    .wearable-data{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+    .wd-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+    .wd-val{font-size:20px;font-weight:700;}
+    .wd-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    .card,.stat-card{animation:fadeIn 0.4s ease both;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">💚</div>
+    <div>
+      <div class="logo-text">Wellness</div>
+      <div class="logo-sub">AI Health Manager</div>
+    </div>
+  </div>
+  <div class="ss">Tracking</div>
+  <nav>
+    <a class="active"><span>📊</span> Dashboard</a>
+    <a><span>😌</span> Mood Journal</a>
+    <a><span>😴</span> Sleep Analysis</a>
+    <a><span>🏃</span> Exercise Log</a>
+    <a><span>💧</span> Hydration</a>
+    <a><span>🔥</span> Burnout Detector</a>
+  </nav>
+  <div class="ss">Integrations</div>
+  <nav>
+    <a><span>⌚</span> Whoop / Fitbit</a>
+    <a><span>🍎</span> Apple Health</a>
+    <a><span>🧠</span> AI Insights</a>
+    <a><span>🎤</span> Voice Journal</a>
+  </nav>
+  <div class="burnout-alert">
+    <div class="ba-title">⚠ Burnout Risk: Moderate</div>
+    <div class="ba-text">Sleep deficit + low activity detected for 3 days.</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Your Wellness Hub 🌿</h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">AI tracking your health patterns · Powered by Llama 3.3 on-device</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost">🎤 Voice Journal</button>
+      <button class="btn btn-primary">+ Log Check-in</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card sc-g">
+      <div class="stat-icon">😊</div>
+      <div class="stat-val">7.4</div>
+      <div class="stat-label">Mood Score /10</div>
+      <div class="stat-delta du">↑ 0.6 from yesterday</div>
+    </div>
+    <div class="stat-card sc-b">
+      <div class="stat-icon">😴</div>
+      <div class="stat-val">6.8h</div>
+      <div class="stat-label">Sleep Last Night</div>
+      <div class="stat-delta dd">↓ 45 min below target</div>
+    </div>
+    <div class="stat-card sc-y">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-val">7,234</div>
+      <div class="stat-label">Steps Today</div>
+      <div class="stat-delta du">↑ 82% of daily goal</div>
+    </div>
+    <div class="stat-card sc-p">
+      <div class="stat-icon">💧</div>
+      <div class="stat-val">1.6L</div>
+      <div class="stat-label">Water Intake</div>
+      <div class="stat-delta dd">↓ 0.9L to go</div>
+    </div>
+  </div>
+
+  <!-- MOOD + RINGS -->
+  <div class="mood-section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">😊 Weekly Mood Tracker</div>
+        <div class="card-action">History</div>
+      </div>
+      <div class="mood-grid">
+        <div class="mood-day"><div class="mood-day-label">Mon</div><div class="mood-emoji">😊</div><div class="mood-score">7.8</div></div>
+        <div class="mood-day"><div class="mood-day-label">Tue</div><div class="mood-emoji">😔</div><div class="mood-score">5.2</div></div>
+        <div class="mood-day"><div class="mood-day-label">Wed</div><div class="mood-emoji">😐</div><div class="mood-score">6.1</div></div>
+        <div class="mood-day"><div class="mood-day-label">Thu</div><div class="mood-emoji">😄</div><div class="mood-score">8.3</div></div>
+        <div class="mood-day"><div class="mood-day-label">Fri</div><div class="mood-emoji">😊</div><div class="mood-score">7.5</div></div>
+        <div class="mood-day"><div class="mood-day-label">Sat</div><div class="mood-emoji">🤩</div><div class="mood-score">9.1</div></div>
+        <div class="mood-day mood-today"><div class="mood-day-label">Sun</div><div class="mood-emoji" onclick="logMood()">😊</div><div class="mood-score">7.4</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15);border-radius:8px;padding:8px 12px;">
+        🧠 <strong style="color:var(--green)">AI Insight:</strong> Your mood dips on Tuesdays. Consider a lighter schedule mid-week.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🎯 Activity Rings</div>
+        <div class="card-action">Apple Health</div>
+      </div>
+      <div class="rings-row">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(248,113,113,0.15)" stroke-width="10"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#f87171" stroke-width="10" stroke-dasharray="213.6" stroke-dashoffset="55" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-val" style="color:var(--red)">718</div>
+          <div class="ring-label">Move<br>kcal</div>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(52,211,153,0.15)" stroke-width="10"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--green)" stroke-width="10" stroke-dasharray="213.6" stroke-dashoffset="86" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-val" style="color:var(--green)">35m</div>
+          <div class="ring-label">Exercise<br>min</div>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(56,189,248,0.15)" stroke-width="10"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--blue)" stroke-width="10" stroke-dasharray="213.6" stroke-dashoffset="44" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-val" style="color:var(--blue)">10h</div>
+          <div class="ring-label">Stand<br>hrs</div>
+        </div>
+      </div>
+      <div class="wearable-data">
+        <div class="wd-card"><div class="wd-val">72 bpm</div><div class="wd-lbl">Heart Rate</div></div>
+        <div class="wd-card"><div class="wd-val">94%</div><div class="wd-lbl">HRV Score</div></div>
+        <div class="wd-card"><div class="wd-val">98%</div><div class="wd-lbl">SpO₂</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLEEP + WATER + BURNOUT -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;">
+    <!-- SLEEP -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">😴 Sleep Analysis</div>
+        <div class="card-action">Details</div>
+      </div>
+      <div class="sleep-bars" id="sleepBars"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;">💡 AI: Deep sleep below avg. Avoid screens after 10 PM.</div>
+    </div>
+    <!-- WATER -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💧 Hydration</div>
+        <div class="card-action">Goal: 2.5L</div>
+      </div>
+      <div style="font-size:28px;font-weight:800;color:var(--blue);">1.6L</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">0.9L remaining to goal</div>
+      <div class="water-track" id="waterTrack"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;">Tap a cup to log 250ml · 7 of 10 cups done</div>
+    </div>
+    <!-- BURNOUT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔥 Burnout Risk Meter</div>
+        <div style="font-size:12px;color:var(--yellow);font-weight:600;">Moderate</div>
+      </div>
+      <div class="burnout-bar-wrap">
+        <div class="burnout-labels"><span>Low</span><span>Moderate</span><span>High</span></div>
+        <div class="burnout-bar-bg"><div class="burnout-bar-fill" id="burnoutFill" style="width:52%"></div></div>
+      </div>
+      <div class="burnout-factors">
+        <div class="bf-row"><div class="bf-label">Sleep deficit</div><div class="bf-bar-bg"><div class="bf-bar-fill" style="width:65%;background:var(--yellow);height:100%;border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted);">65%</span></div>
+        <div class="bf-row"><div class="bf-label">Work hours</div><div class="bf-bar-bg"><div class="bf-bar-fill" style="width:70%;background:var(--red);height:100%;border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted);">70%</span></div>
+        <div class="bf-row"><div class="bf-label">Social time</div><div class="bf-bar-bg"><div class="bf-bar-fill" style="width:30%;background:var(--green);height:100%;border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted);">30%</span></div>
+        <div class="bf-row"><div class="bf-label">Exercise</div><div class="bf-bar-bg"><div class="bf-bar-fill" style="width:45%;background:var(--blue);height:100%;border-radius:999px;"></div></div><span style="font-size:11px;color:var(--muted);">45%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI JOURNAL + ROUTINES -->
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📓 AI Journal Analysis</div>
+        <div style="font-size:11px;color:var(--muted);">Claude API · Sentiment NLP</div>
+      </div>
+      <div class="journal-area">
+        <textarea class="journal-textarea" id="journalText" placeholder="How are you feeling today? Write anything — your AI will analyse mood, stress, and emotional patterns..."></textarea>
+        <div class="journal-footer">
+          <div style="font-size:11px;color:var(--muted);" id="journalAnalysis">Waiting for your entry...</div>
+          <div style="display:flex;gap:8px;">
+            <button class="voice-btn">🎤 Voice</button>
+            <button class="analyze-btn" onclick="analyzeJournal()">Analyse</button>
+          </div>
+        </div>
+      </div>
+      <div id="journalResult" style="margin-top:14px;display:none;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15);border-radius:10px;padding:12px;font-size:12px;line-height:1.8;"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🌿 AI Suggested Routines</div>
+        <div class="card-action">Customise</div>
+      </div>
+      <div id="routineList">
+        <div class="routine-item"><div class="routine-icon">🧘</div><div><div class="routine-name">Morning Meditation</div><div class="routine-time">7:00 AM · 10 min</div></div><div class="routine-toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="routine-item"><div class="routine-icon">🏃</div><div><div class="routine-name">Evening Walk</div><div class="routine-time">6:30 PM · 30 min</div></div><div class="routine-toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="routine-item"><div class="routine-icon">💊</div><div><div class="routine-name">Vitamins &amp; Supplements</div><div class="routine-time">8:00 AM · with breakfast</div></div><div class="routine-toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="routine-item"><div class="routine-icon">📵</div><div><div class="routine-name">Screen-free wind-down</div><div class="routine-time">10:00 PM · 30 min</div></div><div class="routine-toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="routine-item"><div class="routine-icon">💧</div><div><div class="routine-name">Hydration Reminder</div><div class="routine-time">Every 90 min · 250ml</div></div><div class="routine-toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const API_URL = 'http://localhost:8002';
+
+  // Fetch Dashboard
+  async function fetchDashboard() {
+    try {
+      const resp = await fetch(`${API_URL}/dashboard`);
+      const data = await resp.json();
+      // Update UI elements if they have IDs
+      // e.g. document.getElementById('mood-val').textContent = data.mood.score;
+    } catch (e) { console.error(e); }
+  }
+
+  // Log Mood
+  async function logMood(score, emoji, notes = "") {
+    try {
+      const resp = await fetch(`${API_URL}/mood`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score, emoji, notes })
+      });
+      alert('Mood logged locally via AI backend!');
+    } catch (e) { alert('Backend error'); }
+  }
+
+  // Analyze Journal
+  async function analyzeJournal() {
+    const txt = document.getElementById('journalText').value;
+    if(!txt.trim()) return;
+    
+    document.getElementById('journalAnalysis').textContent = 'Analyzing with Mistral-7B...';
+    try {
+      const resp = await fetch(`${API_URL}/journal/analyse`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: txt })
+      });
+      const data = await resp.json();
+      const el = document.getElementById('journalResult');
+      el.innerHTML = `🧠 <strong>Mistral-7B Analysis:</strong><br>${data.analysis}`;
+      el.style.display = 'block';
+      document.getElementById('journalAnalysis').textContent = 'Analysis complete ✓';
+    } catch (e) {
+      document.getElementById('journalAnalysis').textContent = 'Backend unreachable';
+    }
+  }
+
+  // Sleep bars (keeping simple UI logic)
+  const sleepData = [{d:'Mon',h:7.5},{d:'Tue',h:5.8},{d:'Wed',h:8.1},{d:'Thu',h:6.3},{d:'Fri',h:7.0},{d:'Sat',h:8.4},{d:'Sun',h:6.8}];
+  const sleepColors = ['#38bdf8','#f87171','#34d399','#fbbf24','#38bdf8','#34d399','#a78bfa'];
+  const barsEl = document.getElementById('sleepBars');
+  sleepData.forEach((s,i)=>{
+    const h = Math.round((s.h/9)*100);
+    barsEl.innerHTML += `<div class="sleep-bar-wrap"><div class="sleep-val">${s.h}h</div><div class="sleep-bar" style="height:${h}%;background:${sleepColors[i]};opacity:${i===6?1:0.6};"></div><div class="sleep-day">${s.d}</div></div>`;
+  });
+
+  // Initial load
+  fetchDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finance Manager — AI Personal Finance Advisor</title>
+  <meta name="description" content="AI-powered finance dashboard with bank connect, spend tracking, anomaly detection and natural language queries."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#04080f; --bg2:#080f1a; --bg3:#0d1a2a;
+      --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08);
+      --blue:#38bdf8; --blue2:#0ea5e9; --blue3:#0284c7;
+      --green:#34d399; --red:#f87171; --yellow:#fbbf24;
+      --purple:#a78bfa; --orange:#fb923c;
+      --text:#e8f4fd; --muted:#5a8aa8;
+      --radius:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 15% 10%,rgba(56,189,248,0.1) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 85%,rgba(14,165,233,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:10px;padding:0 20px 28px;}
+    .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue3));display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .logo-text{font-size:17px;font-weight:700;}
+    .logo-sub{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.06em;text-transform:uppercase;}
+    nav a{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:all 0.18s;}
+    nav a:hover,nav a.active{color:var(--text);background:rgba(56,189,248,0.08);border-left-color:var(--blue);}
+    .ss{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);padding:18px 20px 6px;}
+    .net-worth-sidebar{margin:auto 16px 16px;background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(14,165,233,0.06));border:1px solid rgba(56,189,248,0.2);border-radius:12px;padding:14px;}
+    .nw-lbl{font-size:11px;color:var(--muted);font-weight:500;}
+    .nw-val{font-size:22px;font-weight:800;color:var(--blue);margin-top:4px;}
+    .nw-delta{font-size:11px;color:var(--green);margin-top:4px;}
+
+    .main{margin-left:240px;padding:32px;position:relative;z-index:1;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+    .topbar h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;}
+    .btn{padding:8px 18px;border-radius:999px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue3));color:#fff;}
+    .btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+    .btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--text);}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .sc-b::before{background:linear-gradient(90deg,var(--blue),var(--blue2));}
+    .sc-g::before{background:linear-gradient(90deg,var(--green),#10b981);}
+    .sc-r::before{background:linear-gradient(90deg,var(--red),var(--orange));}
+    .sc-p::before{background:linear-gradient(90deg,var(--purple),#8b5cf6);}
+    .stat-icon{font-size:22px;margin-bottom:10px;}
+    .stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:500;}
+    .stat-delta{font-size:11px;margin-top:6px;}
+    .du{color:var(--green);} .dd{color:var(--red);}
+
+    /* NL QUERY */
+    .nl-box{background:linear-gradient(135deg,rgba(56,189,248,0.06),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.18);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
+    .nl-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+    .nl-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+    .nl-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+    .nl-chip{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);color:var(--blue);font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;transition:all 0.15s;}
+    .nl-chip:hover{background:rgba(56,189,248,0.2);}
+    .nl-row{display:flex;gap:10px;}
+    .nl-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:999px;padding:10px 18px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.18s;}
+    .nl-input:focus{border-color:var(--blue);}
+    .nl-input::placeholder{color:var(--muted);}
+    .nl-btn{background:linear-gradient(135deg,var(--blue),var(--blue3));border:none;color:#fff;border-radius:999px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .nl-btn:hover{opacity:0.88;}
+    .nl-answer{margin-top:14px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;line-height:1.8;display:none;}
+
+    /* SPEND CHART */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .card-title{font-size:14px;font-weight:700;}
+    .card-action{font-size:12px;color:var(--blue);cursor:pointer;font-weight:500;}
+
+    /* DONUT CHART */
+    .donut-wrap{display:flex;gap:24px;align-items:center;}
+    .donut-legend{display:flex;flex-direction:column;gap:10px;flex:1;}
+    .dl-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+    .dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .dl-name{flex:1;color:var(--muted);}
+    .dl-val{font-weight:600;}
+
+    /* TRANSACTIONS */
+    .txn{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .txn:last-child{border-bottom:none;}
+    .txn-left{display:flex;align-items:center;gap:12px;}
+    .txn-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .txn-name{font-size:13px;font-weight:500;}
+    .txn-cat{font-size:11px;color:var(--muted);margin-top:2px;}
+    .txn-amount{font-size:14px;font-weight:700;}
+    .txn-amount.debit{color:var(--red);}
+    .txn-amount.credit{color:var(--green);}
+
+    /* SUBSCRIPTIONS */
+    .sub-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+    .sub-item:last-child{border-bottom:none;}
+    .sub-left{display:flex;align-items:center;gap:10px;}
+    .sub-icon{font-size:20px;}
+    .sub-name{font-size:13px;font-weight:500;}
+    .sub-date{font-size:11px;color:var(--muted);}
+    .sub-amt{font-size:14px;font-weight:700;color:var(--text);}
+    .sub-tag{font-size:11px;padding:2px 8px;border-radius:999px;margin-top:3px;}
+    .tag-ess{background:rgba(56,189,248,0.12);color:var(--blue);}
+    .tag-ent{background:rgba(167,139,250,0.12);color:var(--purple);}
+    .tag-opt{background:rgba(251,191,36,0.12);color:var(--yellow);}
+
+    /* ANOMALY */
+    .anomaly-item{display:flex;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);margin-bottom:8px;}
+    .anomaly-title{font-size:13px;font-weight:600;color:var(--red);}
+    .anomaly-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+
+    /* BAR CHART */
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:10px;}
+    .bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+    .bar-col{width:100%;border-radius:6px 6px 0 0;transition:height 0.5s ease;cursor:pointer;position:relative;}
+    .bar-col:hover::after{content:attr(data-val);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:11px;white-space:nowrap;color:var(--text);}
+    .bar-lbl{font-size:10px;color:var(--muted);}
+
+    /* SAVINGS GOALS */
+    .goal-item{padding:12px 0;border-bottom:1px solid var(--border);}
+    .goal-item:last-child{border-bottom:none;}
+    .goal-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+    .goal-name{font-size:13px;font-weight:500;}
+    .goal-pct{font-size:13px;font-weight:700;color:var(--blue);}
+    .goal-bar-bg{height:6px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;}
+    .goal-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--green));}
+    .goal-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    .card,.stat-card,.nl-box{animation:fadeIn 0.4s ease both;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">💰</div>
+    <div>
+      <div class="logo-text">Finance AI</div>
+      <div class="logo-sub">Personal Advisor</div>
+    </div>
+  </div>
+  <div class="ss">Overview</div>
+  <nav>
+    <a class="active"><span>📊</span> Dashboard</a>
+    <a><span>💳</span> Transactions</a>
+    <a><span>📈</span> Budgets</a>
+    <a><span>🔄</span> Subscriptions</a>
+    <a><span>🎯</span> Savings Goals</a>
+    <a><span>⚠</span> Anomalies</a>
+    <a><span>🧾</span> Receipt OCR</a>
+  </nav>
+  <div class="ss">Connect</div>
+  <nav>
+    <a><span>🏦</span> Plaid — Banks</a>
+    <a><span>₿</span> Crypto Wallets</a>
+    <a><span>📷</span> Google Vision</a>
+    <a><span>🤖</span> Claude AI</a>
+  </nav>
+  <div class="net-worth-sidebar">
+    <div class="nw-lbl">Net Worth</div>
+    <div class="nw-val">₹8,42,300</div>
+    <div class="nw-delta">↑ ₹12,400 this month (+1.5%)</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Finance Dashboard 💰</h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Connected via Plaid · 3 accounts synced · Last update: just now</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost">🧾 Scan Receipt</button>
+      <button class="btn btn-primary">+ Add Account</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card sc-b">
+      <div class="stat-icon">💵</div>
+      <div class="stat-val">₹84,230</div>
+      <div class="stat-label">Total Balance</div>
+      <div class="stat-delta du">↑ 1.5% this month</div>
+    </div>
+    <div class="stat-card sc-r">
+      <div class="stat-icon">💸</div>
+      <div class="stat-val">₹32,480</div>
+      <div class="stat-label">Spent This Month</div>
+      <div class="stat-delta dd">↓ ₹4,200 over budget</div>
+    </div>
+    <div class="stat-card sc-g">
+      <div class="stat-icon">💾</div>
+      <div class="stat-val">₹12,400</div>
+      <div class="stat-label">Saved This Month</div>
+      <div class="stat-delta du">↑ Best month in 4 months</div>
+    </div>
+    <div class="stat-card sc-p">
+      <div class="stat-icon">🔄</div>
+      <div class="stat-val">₹6,190</div>
+      <div class="stat-label">Subscriptions/Month</div>
+      <div class="stat-delta dd">↓ 2 unused detected</div>
+    </div>
+  </div>
+
+  <!-- NL QUERY -->
+  <div class="nl-box">
+    <div class="nl-title">🤖 Ask your Finance AI</div>
+    <div class="nl-sub">Natural language queries powered by Claude · e.g. "How much did I spend on Zomato this month?"</div>
+    <div class="nl-chips">
+      <div class="nl-chip" onclick="runQuery(this)">How much on food this month?</div>
+      <div class="nl-chip" onclick="runQuery(this)">Show unused subscriptions</div>
+      <div class="nl-chip" onclick="runQuery(this)">Can I afford a holiday in May?</div>
+      <div class="nl-chip" onclick="runQuery(this)">Where am I overspending?</div>
+      <div class="nl-chip" onclick="runQuery(this)">Predict my expenses next month</div>
+    </div>
+    <div class="nl-row">
+      <input class="nl-input" id="nlInput" placeholder="Ask anything about your money..." onkeydown="if(event.key==='Enter')runQuery()"/>
+      <button class="nl-btn" onclick="runQuery()">Ask AI →</button>
+    </div>
+    <div class="nl-answer" id="nlAnswer"></div>
+  </div>
+
+  <!-- CHARTS + TRANSACTIONS -->
+  <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:20px;margin-bottom:20px;">
+    <!-- SPEND BY CATEGORY DONUT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🍩 Spending by Category</div>
+        <div class="card-action">April 2026</div>
+      </div>
+      <div class="donut-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(248,113,113,0.8)" stroke-width="20" stroke-dasharray="314" stroke-dashoffset="0" stroke-linecap="butt" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(56,189,248,0.8)" stroke-width="20" stroke-dasharray="314" stroke-dashoffset="220" stroke-linecap="butt" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(167,139,250,0.8)" stroke-width="20" stroke-dasharray="314" stroke-dashoffset="252" stroke-linecap="butt" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(52,211,153,0.8)" stroke-width="20" stroke-dasharray="314" stroke-dashoffset="270" stroke-linecap="butt" transform="rotate(-90 60 60)"/>
+          <text x="60" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="700" font-family="Inter">Apr</text>
+          <text x="60" y="70" text-anchor="middle" fill="#5a8aa8" font-size="10" font-family="Inter">2026</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="dl-item"><div class="dl-dot" style="background:var(--red);"></div><div class="dl-name">Food & Dining</div><div class="dl-val">₹9,200</div></div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--blue);"></div><div class="dl-name">Shopping</div><div class="dl-val">₹6,800</div></div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--purple);"></div><div class="dl-name">Entertainment</div><div class="dl-val">₹4,100</div></div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--green);"></div><div class="dl-name">Transport</div><div class="dl-val">₹2,900</div></div>
+          <div class="dl-item"><div class="dl-dot" style="background:var(--yellow);"></div><div class="dl-name">Utilities</div><div class="dl-val">₹3,600</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Recent Transactions</div>
+        <div class="card-action">View All</div>
+      </div>
+      <div class="txn">
+        <div class="txn-left"><div class="txn-icon" style="background:rgba(248,113,113,0.15);">🍕</div><div><div class="txn-name">Zomato</div><div class="txn-cat">Food · Apr 15</div></div></div>
+        <div class="txn-amount debit">-₹487</div>
+      </div>
+      <div class="txn">
+        <div class="txn-left"><div class="txn-icon" style="background:rgba(52,211,153,0.15);">💼</div><div><div class="txn-name">Salary Credit</div><div class="txn-cat">Income · Apr 14</div></div></div>
+        <div class="txn-amount credit">+₹75,000</div>
+      </div>
+      <div class="txn">
+        <div class="txn-left"><div class="txn-icon" style="background:rgba(167,139,250,0.15);">🎵</div><div><div class="txn-name">Spotify Premium</div><div class="txn-cat">Entertainment · Apr 13</div></div></div>
+        <div class="txn-amount debit">-₹119</div>
+      </div>
+      <div class="txn">
+        <div class="txn-left"><div class="txn-icon" style="background:rgba(56,189,248,0.15);">⚡</div><div><div class="txn-name">APSPDCL — Electricity</div><div class="txn-cat">Utility · Apr 12</div></div></div>
+        <div class="txn-amount debit">-₹892</div>
+      </div>
+      <div class="txn">
+        <div class="txn-left"><div class="txn-icon" style="background:rgba(251,191,36,0.15);">🛒</div><div><div class="txn-name">Amazon Shopping</div><div class="txn-cat">Shopping · Apr 11</div></div></div>
+        <div class="txn-amount debit">-₹3,240</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTHLY SPEND BARS + SUBSCRIPTIONS + GOALS -->
+  <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📈 Monthly Spending Trend</div>
+        <div style="font-size:11px;color:var(--muted);">Prophet ML Forecast</div>
+      </div>
+      <div class="bar-chart" id="monthChart"></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;">🔮 AI Forecast: May spending ≈ ₹29,200 (↓ 10%)</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔄 Subscriptions</div>
+        <div class="card-action">Manage</div>
+      </div>
+      <div class="sub-item"><div class="sub-left"><div class="sub-icon">🎬</div><div><div class="sub-name">Netflix</div><div class="sub-date">Due Apr 20</div></div></div><div style="text-align:right"><div class="sub-amt">₹649</div><div class="sub-tag tag-ent">Entertainment</div></div></div>
+      <div class="sub-item"><div class="sub-left"><div class="sub-icon">🎵</div><div><div class="sub-name">Spotify</div><div class="sub-date">Due Apr 20</div></div></div><div style="text-align:right"><div class="sub-amt">₹119</div><div class="sub-tag tag-ent">Entertainment</div></div></div>
+      <div class="sub-item"><div class="sub-left"><div class="sub-icon">☁</div><div><div class="sub-name">iCloud 200GB</div><div class="sub-date">Due Apr 22</div></div></div><div style="text-align:right"><div class="sub-amt">₹75</div><div class="sub-tag tag-ess">Essential</div></div></div>
+      <div class="sub-item" style="opacity:0.6;"><div class="sub-left"><div class="sub-icon">🎮</div><div><div class="sub-name">Xbox Game Pass</div><div class="sub-date">Unused · 43 days</div></div></div><div style="text-align:right"><div class="sub-amt">₹489</div><div class="sub-tag tag-opt">⚠ Unused</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🎯 Savings Goals</div>
+        <div class="card-action">+ Add Goal</div>
+      </div>
+      <div class="goal-item"><div class="goal-row"><div class="goal-name">Emergency Fund</div><div class="goal-pct">73%</div></div><div class="goal-bar-bg"><div class="goal-bar-fill" style="width:73%"></div></div><div class="goal-sub">₹1,09,500 / ₹1,50,000</div></div>
+      <div class="goal-item"><div class="goal-row"><div class="goal-name">Laptop Upgrade</div><div class="goal-pct">45%</div></div><div class="goal-bar-bg"><div class="goal-bar-fill" style="width:45%"></div></div><div class="goal-sub">₹45,000 / ₹1,00,000</div></div>
+      <div class="goal-item"><div class="goal-row"><div class="goal-name">Goa Trip ✈</div><div class="goal-pct">28%</div></div><div class="goal-bar-bg"><div class="goal-bar-fill" style="width:28%"></div></div><div class="goal-sub">₹8,400 / ₹30,000</div></div>
+    </div>
+  </div>
+
+  <!-- ANOMALIES -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚠ AI Anomaly Detection</div>
+      <div style="font-size:11px;color:var(--muted);">scikit-learn · Isolation Forest</div>
+    </div>
+    <div class="anomaly-item"><div style="font-size:22px;">🚨</div><div><div class="anomaly-title">Unusual transaction — Swiggy ₹3,400</div><div class="anomaly-desc">Your avg. Swiggy spend is ₹680/order. This amount is 5x above normal. Please verify.</div></div><div style="margin-left:auto;"><button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;">Verify</button></div></div>
+    <div class="anomaly-item"><div style="font-size:22px;">📉</div><div><div class="anomaly-title">Subscription overlap detected</div><div class="anomaly-desc">You're paying for both Netflix + Amazon Prime. Consider cancelling one. AI suggests: cancel Xbox Game Pass (unused 43 days) to save ₹489/month.</div></div><div style="margin-left:auto;"><button class="btn btn-primary" style="font-size:12px;padding:6px 14px;">Cancel</button></div></div>
+    <div class="anomaly-item" style="border-color:rgba(251,191,36,0.15);background:rgba(251,191,36,0.04);"><div style="font-size:22px;">📊</div><div><div class="anomaly-title" style="color:var(--yellow);">Food spending +42% vs last month</div><div class="anomaly-desc">You spent ₹9,200 on food this month vs ₹6,480 last month. Dining out frequency increased. AI suggests meal prepping 3x/week to save ~₹2,000/month.</div></div></div>
+  </div>
+</main>
+
+<script>
+  const API_URL = 'http://localhost:8003';
+
+  // Fetch Dashboard & Transactions
+  async function fetchFinanceData() {
+    try {
+      const resp = await fetch(`${API_URL}/dashboard`);
+      const data = await resp.json();
+      // Update balance if IDs were present
+      // document.getElementById('balance-val').textContent = `₹${data.balance.toLocaleString()}`;
+    } catch (e) { console.error(e); }
+  }
+
+  // Natural Language Query
+  async function runQuery(el) {
+    const qInp = document.getElementById('nlInput');
+    const q = el ? el.textContent : qInp.value;
+    if(!q) return;
+
+    const ans = document.getElementById('nlAnswer');
+    ans.style.display = 'block';
+    ans.innerHTML = '<em style="color:var(--muted)">🤖 Mistral-7B is thinking…</em>';
+
+    try {
+      const resp = await fetch(`${API_URL}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      const data = await resp.json();
+      ans.innerHTML = `🧠 <strong>Advisor Analysis:</strong><br>${data.answer}`;
+    } catch (e) {
+      ans.innerHTML = 'Backend error: Could not reach advisor.';
+    }
+  }
+
+  // Initial load
+  fetchFinanceData();
+
+  // Simple UI chart logic (keeping for visuals)
+  const months = ['Nov','Dec','Jan','Feb','Mar','Apr'];
+  const spend  = [28400,31200,26800,29600,34100,32480];
+  const chart = document.getElementById('monthChart');
+  const maxS = Math.max(...spend);
+  months.forEach((m,i)=>{
+    const pct = Math.round((spend[i]/maxS)*100);
+    const isThis = i===5;
+    chart.innerHTML += `<div class="bar-wrap"><div class="bar-col" style="height:${pct}%;background:${isThis?'linear-gradient(180deg,var(--blue),var(--blue3))':'rgba(56,189,248,0.3)'};${isThis?'':'border:1px solid rgba(56,189,248,0.1);'}" data-val="₹${spend[i].toLocaleString()}"></div><div class="bar-lbl">${m}</div></div>`;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Content Manager — AI Content Strategy Hub</title>
+  <meta name="description" content="AI-powered content creation, scheduling, article summarisation and personalised digest manager."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#0d0800; --bg2:#150e00; --bg3:#1f1500;
+      --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08);
+      --amber:#f59e0b; --amber2:#d97706; --orange:#fb923c;
+      --green:#34d399; --blue:#38bdf8; --red:#f87171;
+      --purple:#a78bfa; --pink:#f472b6;
+      --text:#fdf8ee; --muted:#8b7a4a;
+      --radius:16px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 10%,rgba(245,158,11,0.12) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(251,146,60,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:100;}
+    .logo{display:flex;align-items:center;gap:10px;padding:0 20px 28px;}
+    .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--amber),var(--orange));display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .logo-text{font-size:17px;font-weight:700;}
+    .logo-sub{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.06em;text-transform:uppercase;}
+    nav a{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13.5px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:all 0.18s;}
+    nav a:hover,nav a.active{color:var(--text);background:rgba(245,158,11,0.08);border-left-color:var(--amber);}
+    .ss{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);padding:18px 20px 6px;}
+    .reach-sidebar{margin:auto 16px 16px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px;}
+    .rs-lbl{font-size:11px;color:var(--muted);}
+    .rs-val{font-size:18px;font-weight:800;color:var(--amber);margin-top:4px;}
+    .rs-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+    .main{margin-left:240px;padding:32px;position:relative;z-index:1;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+    .topbar h1{font-size:26px;font-weight:800;letter-spacing:-0.5px;}
+    .btn{padding:8px 18px;border-radius:999px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+    .btn-primary{background:linear-gradient(135deg,var(--amber),var(--orange));color:#fff;}
+    .btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+    .btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--text);}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .sc-a::before{background:linear-gradient(90deg,var(--amber),var(--orange));}
+    .sc-g::before{background:linear-gradient(90deg,var(--green),#10b981);}
+    .sc-b::before{background:linear-gradient(90deg,var(--blue),#0ea5e9);}
+    .sc-p::before{background:linear-gradient(90deg,var(--purple),var(--pink));}
+    .stat-icon{font-size:22px;margin-bottom:10px;}
+    .stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:500;}
+    .stat-delta{font-size:11px;margin-top:6px;}
+    .du{color:var(--green);} .dd{color:var(--red);}
+
+    /* COMPOSE */
+    .compose-box{background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(251,146,60,0.03));border:1px solid rgba(245,158,11,0.18);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
+    .compose-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .compose-title{font-size:14px;font-weight:700;}
+    .platform-tabs{display:flex;gap:6px;}
+    .plt-tab{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all 0.15s;}
+    .plt-tab.active{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.3);color:var(--amber);}
+    .tone-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+    .tone-chip{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all 0.15s;}
+    .tone-chip.active{background:rgba(245,158,11,0.12);border-color:var(--amber);color:var(--amber);}
+    .compose-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;resize:none;outline:none;min-height:100px;transition:border-color 0.18s;}
+    .compose-textarea:focus{border-color:var(--amber);}
+    .compose-textarea::placeholder{color:var(--muted);}
+    .compose-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+    .char-count{font-size:12px;color:var(--muted);}
+    .compose-actions{display:flex;gap:8px;}
+    .ca-btn{padding:7px 16px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text);transition:all 0.15s;}
+    .ca-btn:hover{border-color:var(--amber);color:var(--amber);}
+    .ai-draft-btn{background:linear-gradient(135deg,var(--amber),var(--orange));border:none;color:#fff;padding:7px 16px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer;}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .card-title{font-size:14px;font-weight:700;}
+    .card-action{font-size:12px;color:var(--amber);cursor:pointer;font-weight:500;}
+
+    /* CONTENT QUEUE */
+    .content-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+    .content-item:last-child{border-bottom:none;}
+    .ci-platform{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .ci-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+    .ci-meta{font-size:11px;color:var(--muted);}
+    .ci-status{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:500;margin-left:auto;align-self:flex-start;}
+    .cs-draft{background:rgba(251,191,36,0.12);color:var(--amber);}
+    .cs-scheduled{background:rgba(56,189,248,0.12);color:var(--blue);}
+    .cs-published{background:rgba(52,211,153,0.12);color:var(--green);}
+
+    /* READING LIST */
+    .article-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+    .article-item:last-child{border-bottom:none;}
+    .article-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+    .article-title{font-size:13px;font-weight:500;margin-bottom:4px;line-height:1.4;}
+    .article-source{font-size:11px;color:var(--amber);}
+    .article-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+    .art-tag{font-size:10px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,0.06);color:var(--muted);}
+    .summarize-btn{font-size:11px;color:var(--amber);cursor:pointer;text-decoration:underline;margin-top:4px;display:inline-block;}
+
+    /* ANALYTICS */
+    .analytics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+    .ag-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px;}
+    .ag-val{font-size:22px;font-weight:800;}
+    .ag-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+    .ag-delta{font-size:11px;margin-top:4px;}
+
+    /* DIGEST */
+    .digest-item{background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);border-radius:10px;padding:12px;margin-bottom:8px;}
+    .di-time{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+    .di-title{font-size:13px;font-weight:600;margin-top:4px;}
+    .di-summary{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6;}
+
+    /* CALENDAR */
+    .sched-row{display:flex;gap:8px;margin-bottom:6px;}
+    .sched-day{font-size:11px;color:var(--muted);min-width:36px;padding-top:3px;font-weight:600;}
+    .sched-slot{flex:1;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:6px;padding:6px 10px;font-size:12px;}
+    .sched-empty{flex:1;height:28px;}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    .card,.stat-card,.compose-box{animation:fadeIn 0.4s ease both;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">✍</div>
+    <div>
+      <div class="logo-text">ContentAI</div>
+      <div class="logo-sub">Strategy Manager</div>
+    </div>
+  </div>
+  <div class="ss">Create</div>
+  <nav>
+    <a class="active"><span>🏠</span> Studio</a>
+    <a><span>📅</span> Content Calendar</a>
+    <a><span>✍</span> AI Drafting</a>
+    <a><span>📸</span> Image Gen (DALL-E)</a>
+    <a><span>📊</span> Analytics</a>
+  </nav>
+  <div class="ss">Consume</div>
+  <nav>
+    <a><span>📚</span> Reading List</a>
+    <a><span>🗞</span> Daily Digest</a>
+    <a><span>▶</span> YouTube Feed</a>
+    <a><span>📡</span> RSS Feeds</a>
+    <a><span>🔍</span> Perplexity Research</a>
+  </nav>
+  <div class="reach-sidebar">
+    <div class="rs-lbl">This Month's Reach</div>
+    <div class="rs-val">142,800</div>
+    <div class="rs-sub">↑ 23% vs last month</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Content Studio ✍</h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">AI tone-matched to your voice · Claude + Pinecone · 3 posts scheduled today</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost">🔍 Research</button>
+      <button class="btn btn-primary">+ New Post</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card sc-a">
+      <div class="stat-icon">📝</div>
+      <div class="stat-val">18</div>
+      <div class="stat-label">Drafts This Month</div>
+      <div class="stat-delta du">↑ 6 AI-assisted</div>
+    </div>
+    <div class="stat-card sc-g">
+      <div class="stat-icon">📅</div>
+      <div class="stat-val">31</div>
+      <div class="stat-label">Posts Scheduled</div>
+      <div class="stat-delta du">↑ 8 days ahead</div>
+    </div>
+    <div class="stat-card sc-b">
+      <div class="stat-icon">👁</div>
+      <div class="stat-val">142K</div>
+      <div class="stat-label">Total Impressions</div>
+      <div class="stat-delta du">↑ 23% vs last month</div>
+    </div>
+    <div class="stat-card sc-p">
+      <div class="stat-icon">📚</div>
+      <div class="stat-val">47</div>
+      <div class="stat-label">Articles Summarised</div>
+      <div class="stat-delta du">↑ 12 this week</div>
+    </div>
+  </div>
+
+  <!-- COMPOSE BOX -->
+  <div class="compose-box">
+    <div class="compose-header">
+      <div class="compose-title">✍ AI Content Composer</div>
+      <div class="platform-tabs">
+        <div class="plt-tab active" onclick="setPlt(this,'LinkedIn')">LinkedIn</div>
+        <div class="plt-tab" onclick="setPlt(this,'Twitter')">Twitter / X</div>
+        <div class="plt-tab" onclick="setPlt(this,'Instagram')">Instagram</div>
+        <div class="plt-tab" onclick="setPlt(this,'Blog')">Blog</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">AI Tone Matching — write like <em>you</em>:</div>
+    <div class="tone-row">
+      <div class="tone-chip active" onclick="setTone(this)">Professional</div>
+      <div class="tone-chip" onclick="setTone(this)">Casual</div>
+      <div class="tone-chip" onclick="setTone(this)">Storytelling</div>
+      <div class="tone-chip" onclick="setTone(this)">Educational</div>
+      <div class="tone-chip" onclick="setTone(this)">Inspirational</div>
+      <div class="tone-chip" onclick="setTone(this)">Witty</div>
+    </div>
+    <textarea class="compose-textarea" id="composeText" placeholder="Write your idea here, or let AI draft it for you based on a topic…" oninput="updateCount()"></textarea>
+    <div class="compose-footer">
+      <div class="char-count" id="charCount">0 / 3000 chars</div>
+      <div class="compose-actions">
+        <button class="ca-btn" onclick="aiDraft()">🤖 AI Draft</button>
+        <button class="ca-btn" onclick="aiRewrite()">🔄 Rewrite</button>
+        <button class="ca-btn">🖼 Add Image</button>
+        <button class="ai-draft-btn" onclick="schedulePost()">📅 Schedule →</button>
+      </div>
+    </div>
+    <div id="aiDraftResult" style="margin-top:12px;display:none;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px;font-size:13px;line-height:1.7;"></div>
+  </div>
+
+  <!-- QUEUE + READING LIST -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📅 Content Queue</div>
+        <div class="card-action">Manage Schedule</div>
+      </div>
+      <div class="content-item">
+        <div class="ci-platform" style="background:rgba(56,189,248,0.15);">🔵</div>
+        <div><div class="ci-title">5 AI Tools That Changed My Workflow</div><div class="ci-meta">LinkedIn · Today 9:00 AM</div></div>
+        <div class="ci-status cs-published">Published</div>
+      </div>
+      <div class="content-item">
+        <div class="ci-platform" style="background:rgba(0,0,0,0.3);">𝕏</div>
+        <div><div class="ci-title">Thread: How I built a $0 AI stack…</div><div class="ci-meta">Twitter/X · Today 2:00 PM</div></div>
+        <div class="ci-status cs-scheduled">Scheduled</div>
+      </div>
+      <div class="content-item">
+        <div class="ci-platform" style="background:rgba(245,158,11,0.15);">🟡</div>
+        <div><div class="ci-title">Behind-the-scenes: My daily routine</div><div class="ci-meta">Instagram · Tomorrow 11:00 AM</div></div>
+        <div class="ci-status cs-draft">Draft</div>
+      </div>
+      <div class="content-item">
+        <div class="ci-platform" style="background:rgba(167,139,250,0.15);">📝</div>
+        <div><div class="ci-title">The Future of Agentic AI — Blog Post</div><div class="ci-meta">Blog · Apr 18</div></div>
+        <div class="ci-status cs-draft">Draft</div>
+      </div>
+      <div class="content-item">
+        <div class="ci-platform" style="background:rgba(56,189,248,0.15);">🔵</div>
+        <div><div class="ci-title">What nobody tells you about productivity</div><div class="ci-meta">LinkedIn · Apr 20</div></div>
+        <div class="ci-status cs-scheduled">Scheduled</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📚 Saved Reading List</div>
+        <div class="card-action">+ Add URL</div>
+      </div>
+      <div class="article-item">
+        <div class="article-thumb">🤖</div>
+        <div>
+          <div class="article-title">How Claude claude-sonnet-4-20250514 Changes Agentic Workflows Forever</div>
+          <div class="article-source">Anthropic Blog</div>
+          <div class="article-tags"><span class="art-tag">AI</span><span class="art-tag">Agents</span></div>
+          <span class="summarize-btn" onclick="summarizeArticle(this,'AI agents and reasoning')">Summarise with AI →</span>
+        </div>
+      </div>
+      <div class="article-item">
+        <div class="article-thumb">💡</div>
+        <div>
+          <div class="article-title">The Second Brain Methodology for Knowledge Workers</div>
+          <div class="article-source">Forte Labs</div>
+          <div class="article-tags"><span class="art-tag">Productivity</span><span class="art-tag">PKM</span></div>
+          <span class="summarize-btn" onclick="summarizeArticle(this,'second brain knowledge management')">Summarise with AI →</span>
+        </div>
+      </div>
+      <div class="article-item">
+        <div class="article-thumb">📈</div>
+        <div>
+          <div class="article-title">How Creators Built $1M Audiences on LinkedIn in 2025</div>
+          <div class="article-source">Creator Economy Report</div>
+          <div class="article-tags"><span class="art-tag">LinkedIn</span><span class="art-tag">Creator</span></div>
+          <span class="summarize-btn" onclick="summarizeArticle(this,'LinkedIn audience building')">Summarise with AI →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS + DIGEST -->
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📊 AI Engagement Analytics</div>
+        <div style="font-size:11px;color:var(--muted);">Semantic deduplication · Engagement AI</div>
+      </div>
+      <div class="analytics-grid">
+        <div class="ag-card"><div class="ag-val" style="color:var(--amber);">4.8%</div><div class="ag-lbl">Avg. Engagement Rate</div><div class="ag-delta du">↑ 1.2% vs last month</div></div>
+        <div class="ag-card"><div class="ag-val" style="color:var(--blue);">2,340</div><div class="ag-lbl">Profile Visits / Week</div><div class="ag-delta du">↑ 18%</div></div>
+        <div class="ag-card"><div class="ag-val" style="color:var(--green);">89</div><div class="ag-lbl">New Followers This Week</div><div class="ag-delta du">↑ Best week ever</div></div>
+        <div class="ag-card"><div class="ag-val" style="color:var(--purple);">340</div><div class="ag-lbl">Comments This Month</div><div class="ag-delta du">↑ 34%</div></div>
+        <div class="ag-card"><div class="ag-val" style="color:var(--red);">1,280</div><div class="ag-lbl">Link Clicks</div><div class="ag-delta dd">↓ 5% vs avg</div></div>
+        <div class="ag-card"><div class="ag-val" style="color:var(--amber);">Tue 9AM</div><div class="ag-lbl">Best Post Time</div><div class="ag-delta du">AI-detected pattern</div></div>
+      </div>
+      <div style="margin-top:14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px;font-size:12px;line-height:1.7;">
+        🤖 <strong style="color:var(--amber)">AI Insight:</strong> Your "storytelling" tone posts get 2.4x more engagement than educational ones. Your post about personal projects got 3x reach — consider creating a series around your AI projects!
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🗞 Today's AI Digest</div>
+        <div style="font-size:11px;color:var(--muted);">YouTube + RSS ingestion</div>
+      </div>
+      <div class="digest-item">
+        <div class="di-time">AI / Technology</div>
+        <div class="di-title">Gemini 2.0 Flash Thinking now available</div>
+        <div class="di-summary">Google released a new reasoning model with multimodal support. Key implication: cheaper, faster inference for agent pipelines.</div>
+      </div>
+      <div class="digest-item">
+        <div class="di-time">Creator Economy</div>
+        <div class="di-title">LinkedIn rolls out Creator Analytics 2.0</div>
+        <div class="di-summary">Advanced demographic data and content recommendations now in LinkedIn Creator Hub. Post reach tracking improved.</div>
+      </div>
+      <div class="digest-item">
+        <div class="di-time">Productivity</div>
+        <div class="di-title">Notion AI gets PDF summarisation</div>
+        <div class="di-summary">Upload any PDF to your Notion workspace and get instant summaries via their AI assistant. Useful for research workflows.</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const API_URL = 'http://localhost:8004';
+
+  function setPlt(el,name){ document.querySelectorAll('.plt-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+  function setTone(el){ document.querySelectorAll('.tone-chip').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+  function updateCount(){ const t=document.getElementById('composeText').value; document.getElementById('charCount').textContent=t.length+' / 3000 chars'; }
+
+  // AI Draft via Mistral-7B
+  async function aiDraft() {
+    const topic = document.getElementById('composeText').value || "AI Productivity";
+    const plt = document.querySelector('.plt-tab.active').textContent;
+    const tone = document.querySelector('.tone-chip.active').textContent;
+    const res = document.getElementById('aiDraftResult');
+
+    res.style.display = 'block';
+    res.innerHTML = '<em style="color:var(--muted)">🤖 Mistral-7B is drafting…</em>';
+
+    try {
+      const resp = await fetch(`${API_URL}/content/draft`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, platform: plt, tone })
+      });
+      const data = await resp.json();
+      document.getElementById('composeText').value = data.draft;
+      updateCount();
+      res.innerHTML = `✅ <strong>Local AI Draft ready!</strong><br><small style="opacity:0.5">Model: ${data.model}</small>`;
+    } catch (e) {
+      res.innerHTML = 'Backend error: Could not reach Content AI.';
+    }
+  }
+
+  // Research Topic
+  async function runResearch() {
+    const q = prompt("What topic should I research?");
+    if(!q) return;
+    alert("Researching with Mistral-7B... check console for result (prototype)");
+    try {
+      const resp = await fetch(`${API_URL}/research`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      const data = await resp.json();
+      console.log(data.research);
+    } catch (e) { console.error(e); }
+  }
+</script>
+</body>
+</html>

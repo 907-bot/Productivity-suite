@@ -14,9 +14,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Add root to path to import db_helper
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from db_helper import DB
+# Add root to search path to ensure db_helper can be found
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
+
+try:
+    from db_helper import DB
+except ImportError:
+    # If standard import fails, try direct path import
+    import db_helper
+    DB = db_helper.DB
 
 load_dotenv()
 
